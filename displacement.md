@@ -187,6 +187,7 @@ TODO:
 - Normal field is not a normal field. Consistently call it displacement field?
 - Should consumers clip with simple or fine geometry?
 - Consistent with multiproperties?
+- Do we need a "target resolution"?
 
 # Part II. Appendixes
 
