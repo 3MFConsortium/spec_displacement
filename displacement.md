@@ -112,17 +112,21 @@ Editing applications are subject to all of the above rules.
 | Sphere mesh (27.500 triangles, 411kB). | Sphere mesh with greyscale displacement map (27.500 triangles, 1.2MB) | Retesselated Sphere mesh (660.000 triangles, 12.1MB)|
 
 The rationale of the displacement specification extension is to enhance mesh geometry by a displacement mapping.
-This is achieved by assigning a displacement map (vectors attached to nodes, linearly interpolated) to the conventional 3MD mesh geometry and a scalar map that describes the offset in the direction of the displacement vector.
+This is achieved by assigning a displacements to the conventional 3D mesh geometry and a scalar map that describes the offset in the direction of the displacement vector.
 This allows a very memory effective, accurate description of complex geometry.
 
+This means that a displacement information of a triangle is given by
+- UV coordinates for each corner
+- A scalar 2D image for representing the "heightmap"
+- A displacement direction for each corner which can be interpolated linearly on the surface
+
+| ![Traingle with dispalcement vectors and depth](images/displacement_triangle.png) | ![Texture referenced by triangle](images/displacement_scalar.png) |
+| :---: | :---: | :---: |
+| Traingle with dispalcement vectors and depth encoded in texture. | Texture referenced by triangle. The region referenced by the UV coordinates is highlighted. |
 
 TODO: comparision to/distinction from normal mapping, bump mapping
 
-
 This document describes new elements, each of which is OPTIONAL for producers, but MUST be supported by consumers that specify support for this displacement extension of 3MF.
-
-
-A consumer MAY calculate a different toolpath than the one specified by this extension. In addition, private extensions, information in the printticket can be used to specify machine specific parameters.
 
 ##### Figure 2-1: Overview of model XML structure of 3MF with displacement additions.
 
