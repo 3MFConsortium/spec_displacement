@@ -111,8 +111,16 @@ Editing applications are subject to all of the above rules.
 | :---: | :---: | :---: |
 | Sphere mesh (27.500 triangles, 411kB). | Sphere mesh with greyscale displacement map (27.500 triangles, 1.2MB) | Retesselated Sphere mesh (660.000 triangles, 12.1MB)|
 
+The rationale of the displacement specification extension is to enhance mesh geometry by a displacement mapping.
+This is achieved by assigning a displacement map (vectors attached to nodes, linearly interpolated) to the conventional 3MD mesh geometry and a scalar map that describes the offset in the direction of the displacement vector.
+This allows a very memory effective, accurate description of complex geometry.
+
+
+TODO: comparision to/distinction from normal mapping, bump mapping
+
 
 This document describes new elements, each of which is OPTIONAL for producers, but MUST be supported by consumers that specify support for this displacement extension of 3MF.
+
 
 A consumer MAY calculate a different toolpath than the one specified by this extension. In addition, private extensions, information in the printticket can be used to specify machine specific parameters.
 
@@ -176,10 +184,9 @@ TODO:
 TODO:
 - depth > / < 0 => unification / intersection of volumes
 - Normal field illustration
-- Normal field is not a normal field. Always call it displacement field?
+- Normal field is not a normal field. Consistently call it displacement field?
 - Should consumers clip with simple or fine geometry?
-
-
+- Consistent with multiproperties?
 
 # Part II. Appendixes
 
