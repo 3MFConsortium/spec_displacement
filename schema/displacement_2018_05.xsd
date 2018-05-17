@@ -23,14 +23,14 @@ elementFormDefault="unqualified" attributeFormDefault="unqualified" blockDefault
 		<xs:anyAttribute namespace="##other" processContents="lax"/> 
 	</xs:complexType>
 	
-	<xs:complexType name="CT_Displacement2d">   
+	<xs:complexType name="CT_Displacement2D">   
 		<xs:attribute name="id" type="ST_ResourceID"  use="required"/>
 		<xs:attribute name="path" type="ST_UriReference"  use="required" />
 		<xs:attribute name="contenttype" type="ST_ContentType"  use="required"/>
 		<xs:anyAttribute namespace="##other" processContents="lax"/> 
 	</xs:complexType>
 	
-	<xs:complexType name="CT_Disp2dGroup">
+	<xs:complexType name="CT_Disp2DGroup">
 		<xs:sequence>
 			<xs:element ref="disp2dcoord" minOccurs="1" maxOccurs="2147483647"/>
 			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="2147483647"/>
@@ -41,7 +41,7 @@ elementFormDefault="unqualified" attributeFormDefault="unqualified" blockDefault
 		<xs:anyAttribute namespace="##other" processContents="lax"/> 
 	</xs:complexType>
 	
-	<xs:complexType name="CT_Disp2dCoord">
+	<xs:complexType name="CT_Disp2DCoord">
 		<xs:attribute name="u" type="ST_Number" use="required"/>
 		<xs:attribute name="v" type="ST_Number" use="required"/>
 		<xs:attribute name="nx" type="ST_Number" use="required"/>
@@ -76,7 +76,7 @@ elementFormDefault="unqualified" attributeFormDefault="unqualified" blockDefault
 	
 	<!-- Elements -->
 	<xs:element name="resources" type="CT_Resources"/>
-	<xs:element name="displacement2d" type="CT_Displacement2d"/>
-	<xs:element name="disp2dgroup" type="CT_Disp2dGroup"/>
-	<xs:element name="disp2dcoord" type="CT_Disp2dCoord"/>
+	<xs:element name="displacement2d" type="CT_Displacement2D"/>
+	<xs:element name="disp2dgroup" type="CT_Disp2DGroup"/>
+	<xs:element name="disp2dcoord" type="CT_Disp2DCoord"/>
 </xs:schema> 

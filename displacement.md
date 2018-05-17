@@ -114,7 +114,6 @@ Editing applications are subject to all of the above rules.
 
 This document describes new elements, each of which is OPTIONAL for producers, but MUST be supported by consumers that specify support for this displacement extension of 3MF.
 
-
 A consumer MAY calculate a different toolpath than the one specified by this extension. In addition, private extensions, information in the printticket can be used to specify machine specific parameters.
 
 ##### Figure 2-1: Overview of model XML structure of 3MF with displacement additions.
@@ -137,8 +136,10 @@ Element **\<displacement2d>**
 | contenttype | **ST\_ContentType** | required |   | Content type of texture resource. PNG or JPEG allowed|
 
 TODO:
+- encoding in grayscale 8 / 16 bit. Must be grayscale PNG. what if not? fallback to generate grayscale?
+- relationship to texture2d?
 
-## 2.2 Disp2dGroup
+## 2.2 Disp2DGroup
 Element **\<disp2dgroup>**
 
 ![Disp2dGroup XML structure](images/xsd_disp2dgroup.png)
@@ -155,7 +156,7 @@ TODO:
 - OPC relationship: texture 
 
 
-## 2.2.1 Disp2dCoords
+## 2.2.1 Disp2DCoords
 Element **\<disp2dcoords>**
 
 ![Disp2dCoords XML structure](images/xsd_disp2dcoords.png)
@@ -170,6 +171,13 @@ Element **\<disp2dcoords>**
 
 TODO:
 - Normalization of nx, ny, nz? 
+
+# Chapter 3. Usage rules and interpretation
+TODO:
+- depth > / < 0 => unification / intersection of volumes
+- Normal field illustration
+- Normal field is not a normal field. Always call it displacement field?
+- Should consumers clip with simple or fine geometry?
 
 
 
