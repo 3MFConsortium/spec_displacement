@@ -13,39 +13,30 @@
 
 
 
-| **Version** | 0.2 |
+| **Version** | 0.3 |
 | --- | --- |
 | **Status** | Draft |
 
 ## Table of Contents
 
-[Preface](#preface)
-
-[About this Specification](#11-about-this-specification)
-
-[Document Conventions](#12-document-conventions)
-
-[Language Notes](#13-language-notes)
-
-[Software Conformance](#14-software-conformance)
-
-[Part I: 3MF Documents](#part-i-3mf-documents)
-
-[Chapter 1. Overview of Additions](#chapter-1-overview-of-additions)
-
-[Chapter 2. Resources](#chapter-2-resources)
-
-[Part II. Appendixes](#part-ii-appendixes)
-
-[Appendix A. Glossary](#appendix-a-glossary)
-
-[Appendix B. 3MF XSD Schema](#appendix-b-3mf-xsd-schema)
-
-[Appendix C. Standard Namespace](#appendix-c-standard-namespace)
-
-[Appendix D: Example file](#appendix-d-example-file)
-
-[References](#references)
+- [Preface](#preface)
+  * [About this Specification](#11-about-this-specification)
+  * [Document Conventions](#12-document-conventions)
+  * [Language Notes](#13-language-notes)
+  * [Software Conformance](#14-software-conformance)
+- [Part I: 3MF Documents](#part-i-3mf-documents)
+  * [Chapter 1. Overview of Additions](#chapter-1-overview-of-additions)
+  * [Chapter 2. Resources](#chapter-2-resources)
+    + [2.1 Displacement2D](#21-displacement2d)
+    + [2.2 Disp2DGroup](#22-disp2dgroup)
+    + [2.2.1 Disp2DCoords](#221-disp2dcoords)
+  * [Chapter 3. Usage rules and interpretation](#chapter-3-usage-rules-and-interpretation)
+- [Part II. Appendixes](#part-ii-appendixes)
+  * [Appendix A. Glossary](#appendix-a-glossary)
+  * [Appendix B. 3MF XSD Schema](#appendix-b-3mf-xsd-schema)
+  * [Appendix C. Standard Namespace](#appendix-c-standard-namespace)
+  * [Appendix D: Example file](#appendix-d-example-file)
+- [References](#references)
 
 
 
@@ -109,7 +100,6 @@ This document describes new elements, each of which is OPTIONAL for producers, b
 
 # Chapter 2. Resources
 
-
 ## 2.1 Displacement2D
 Element **\<displacement2d>**
 
@@ -117,13 +107,34 @@ Element **\<displacement2d>**
 
 | Name   | Type   | Use   | Default   | Annotation |
 | --- | --- | --- | --- | --- |
-| id | **ST\_ResourceID** | required |   | ResourceID of this displacement resource |
-| path | **ST\_UriReference** | required |   | path to the gray scale displacement texture |
-| contenttype | **ST\_ContentType** | required |   | Content type of texture resource. PNG or JPEG allowed|
+| id | **ST\_ResourceID** | required |   | ResourceID of this displacement resource. |
+| path | **ST\_UriReference** | required |   | path to the displacement texture. |
+| contenttype | **ST\_ContentType** | required |   | Content type of the texture resource. PNG or JPEG allowed. |
+| channel | **ST\_ChannelName** | optional | G | Specifies which channel to reference in the displacement texture. Valid values are R, G, B. Ignored for monochromatic images. |
+| tilestyleu | **ST_TileStyle** |  | wrap | Specifies how tiling should occur in the u axis in order to fill the overall requested area. Valid values are wrap, mirror, clamp, none. |
+| tilestylev | **ST_TileStyle** |  | wrap | Specifies how tiling should occur in the v axis in order to fill the overall requested area. Valid values are wrap, mirror, clamp, none. |
+| filter | **ST_Filter** |  | auto | Specifies the texture filter to apply when scaling the source texture.  Allowed values are “auto”, “linear”, “nearest”. |
+| @anyAttribute | | | | |
 
-TODO:
-- encoding in grayscale 8 / 16 bit. Must be grayscale PNG. what if not? fallback to generate grayscale?
-- relationship to texture2d?
+A displacement texture resource provides information about texture image data, found via the provided path reference, which MUST also be the target of a 3D Texture relationship from the 3D Model part. 
+
+**contenttype** - The only supported content types are JPEG and PNG, as more specifically specified in the 3MF core spec under the [6.1. Thumbnail](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#61-thumbnail) section.
+
+**channel** - The channel attribute select which of the RGB channels defined the displacement texture. 
+
+If the specification says that a certain value is sampled from the texture’s R channel, but the referenced texture is only monochromatic then grayscale channel MUST be interpreted as the R color channel. Similarly, color values sampled from a monochromatic texture MUST be interpreted as if all R, G, B color channels shared the same grayscale value.
+
+If the channel attribute is not specified, it defauls to the G-green channel for RGB images, or to the gray scale channel for monochromatic images.
+
+The alpha channel that might be optionally specified in PNG images MUST be ignored for the displacement texture.
+
+The displacement texture values range are independant from the iamge coding range, either 8-bit or 16-bit. The minimum value in the image MUST be mapped to the displacement texture value of -1.0, the center value will be mapped to 0.0 and the maximum value in the image MUST be mapped to 1.0. Any intermediate value MUST be linearly interpolated into the range [ -1.0, 1.0 ]. For example for a 8-bit value in the range [0, 255], the 0 will be mapped to -1.0, the 128 will be mapped to 0.0 and to 255 will be mapped to 1.0.
+
+**tilestyleu, tilestylev** - The tile style of wrap essentially means that the same displacement texture SHOULD be repeated in the specified axis (both in the positive and negative directions), for the axis value. The tile style of mirror means that each time the displacement texture width or height is exceeded, the next repetition of the texture SHOULD be reflected across a plane perpendicular to the axis in question. The tile style of clamp means all Displacement 2D Coordinates outside of the range zero to one will be assigned the displacement value of the nearest edge pixel. The tile style of none means that all Displacement 2D Coordinates outside the range zero to one will not have a displacement and stay on the triangle's surface.
+
+The only supported content types are JPEG and PNG, as more specifically specified in the 3MF core spec under the Thumbnails section.
+
+**filter** - The producer MAY require the use of a specific filter type by specifying either “linear” for bilinear interpolation or “nearest” for nearest neighbor interpolation. The producer SHOULD use “auto” to indicate to the consumer to use the highest quality filter available. If source texture is scaled with the model, the specified filter type MUST be applied to the scaling operation. The default value is “auto”.
 
 ## 2.2 Disp2DGroup
 Element **\<disp2dgroup>**
@@ -135,12 +146,11 @@ Element **\<disp2dgroup>**
 | id | **ST\_ResourceID** | required |   | ResourceID of this Disp2dGroup resource |
 | dispid | **ST\_ResourceID** | required |   | ID of the Displacement map used in this group |
 | depth | **ST\_Number** | required |   | Scaling factor for the values in the displacement map |
+| @anyAttribute | | | | |
 
-TODO:
-- Tilestyle?
-- simply use a regular texture?
-- OPC relationship: texture 
+A \<disp2dgroup> element acts as a container for texture coordinate properties. The order of these elements forms an implicit 0-based index that is referenced by other elements, such as the \<object> and \<triangle> elements. It also specifies which image to use, via dispid. The referenced \<displacement2d> elements are described above in [2.1 Displacement2D](#21-displacement2d).
 
+To avoid integer overflows, a texture coordinate group MUST contain less than 2^31 disp2dcoords.
 
 ## 2.2.1 Disp2DCoords
 Element **\<disp2dcoords>**
@@ -151,9 +161,10 @@ Element **\<disp2dcoords>**
 | --- | --- | --- | --- | --- |
 | u | **ST\_Number** | required |   | The u-coordinate within the texture, horizontally right from the origin in the lower left of the texture. |
 | v | **ST\_Number** | required |   | The v-coordinate within the texture, vertically up from the origin in the lower left of the texture.|
-| nx | **ST\_Number** | required |   | X-component of the displacement vector. |
-| ny | **ST\_Number** | required |   | Y-component of the displacement vector. |
-| nz | **ST\_Number** | required |   | Z-component of the displacement vector. |
+| nx | **ST\_Number** | required |   | X-component of the normalized displacement vector. |
+| ny | **ST\_Number** | required |   | Y-component of the normalized displacement vector. |
+| nz | **ST\_Number** | required |   | Z-component of the normalized displacement vector. |
+| @anyAttribute | | | | |
 
 TODO:
 - Normalization of nx, ny, nz? 
@@ -177,10 +188,10 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?> 
-<xs:schema xmlns="http://schemas.microsoft.com/3dmanufacturing/lasertoolpath/2018/05" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace" 
-targetNamespace="http://schemas.microsoft.com/3dmanufacturing/lasertoolpath/2018/05" elementFormDefault="unqualified" attributeFormDefault="unqualified" blockDefault="#all"> 
+<xs:schema xmlns="http://schemas.microsoft.com/3dmanufacturing/displacement/2018/05" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace" targetNamespace="http://schemas.microsoft.com/3dmanufacturing/displacement/2018/05" 
+elementFormDefault="unqualified" attributeFormDefault="unqualified" blockDefault="#all">
 	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd"/>
-  <xs:annotation> 
+	<xs:annotation> 
 		<xs:documentation><![CDATA[   Schema notes: 
  
   Items within this schema follow a simple naming convention of appending a prefix indicating the type of element for references: 
@@ -191,19 +202,103 @@ targetNamespace="http://schemas.microsoft.com/3dmanufacturing/lasertoolpath/2018
    
   ]]></xs:documentation> 
 	</xs:annotation> 
+	
 	<!-- Complex Types --> 
-	<xs:complexType name="CT_Slice"> 
-		<xs:attribute name="toolpath" type="ST_UriReference" use="optional"/>
-		<xs:anyAttribute namespace="##other" processContents="lax"/>
+	<xs:complexType name="CT_Resources"> 
+		<xs:sequence>
+			<xs:choice minOccurs="0" maxOccurs="2147483647">
+				<xs:element ref="displacement2d" minOccurs="0" maxOccurs="2147483647"/>
+				<xs:element ref="disp2dgroup" minOccurs="0" maxOccurs="2147483647"/>
+				<xs:any namespace="##other" processContents="lax" minOccurs="0"
+					maxOccurs="2147483647"/>
+			</xs:choice>
+		</xs:sequence>
+		<xs:anyAttribute namespace="##other" processContents="lax"/> 
 	</xs:complexType>
+	
+	<xs:complexType name="CT_Displacement2D">   
+		<xs:attribute name="id" type="ST_ResourceID"  use="required"/>
+		<xs:attribute name="path" type="ST_UriReference"  use="required" />
+		<xs:attribute name="contenttype" type="ST_ContentType"  use="required"/>
+		<xs:attribute name="channel" type="ST_ChannelName"  default="G"/>
+		<xs:attribute name="tilestyleu" type="ST_TileStyle" default="wrap"/>
+		<xs:attribute name="tilestylev" type="ST_TileStyle" default="wrap"/>
+		<xs:attribute name="filter" type="ST_Filter" default="auto"/>
+		<xs:anyAttribute namespace="##other" processContents="lax"/> 
+	</xs:complexType>
+	
+	<xs:complexType name="CT_Disp2DGroup">
+		<xs:sequence>
+			<xs:element ref="disp2dcoord" minOccurs="1" maxOccurs="2147483647"/>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="2147483647"/>
+		</xs:sequence>
+		<xs:attribute name="id" type="ST_ResourceID"  use="required"/>
+		<xs:attribute name="dispid" type="ST_ResourceID"  use="required"/>
+		<xs:attribute name="depth" type="ST_Number"  use="required"/>
+		<xs:anyAttribute namespace="##other" processContents="lax"/> 
+	</xs:complexType>
+	
+	<xs:complexType name="CT_Disp2DCoord">
+		<xs:attribute name="u" type="ST_Number" use="required"/>
+		<xs:attribute name="v" type="ST_Number" use="required"/>
+		<xs:attribute name="nx" type="ST_Number" use="required"/>
+		<xs:attribute name="ny" type="ST_Number" use="required"/>
+		<xs:attribute name="nz" type="ST_Number" use="required"/>
+		<xs:anyAttribute namespace="##other" processContents="lax"/> 
+	</xs:complexType>
+	
 	<!-- Simple Types -->
+	<xs:simpleType name="ST_ContentType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="image/jpeg"/>
+			<xs:enumeration value="image/png"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ST_ChannelName">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="R"/>
+			<xs:enumeration value="G"/>
+			<xs:enumeration value="B"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ST_TileStyle">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="clamp"/>
+			<xs:enumeration value="wrap"/>
+			<xs:enumeration value="mirror"/>
+			<xs:enumeration value="none"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ST_Filter">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="auto"/>
+			<xs:enumeration value="linear"/>
+			<xs:enumeration value="nearest"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="ST_UriReference"> 
 		<xs:restriction base="xs:anyURI"> 
 			<xs:pattern value="/.*"/> 
 		</xs:restriction> 
+	</xs:simpleType> 
+	<xs:simpleType name="ST_Number"> 
+		<xs:restriction base="xs:double"> 
+			<xs:whiteSpace value="collapse"/> 
+			<xs:pattern value="((\-|\+)?(([0-9]+(\.[0-9]+)?)|(\.[0-9]+))((e|E)(\-|\+)?[0-9]+)?)"/> 
+		</xs:restriction> 
+	</xs:simpleType> 
+	<xs:simpleType name="ST_ResourceID">
+		<xs:restriction base="xs:positiveInteger">
+			<xs:maxExclusive value="2147483648"/>
+		</xs:restriction>
 	</xs:simpleType>
-	<!-- Elements --> 
-</xs:schema>
+
+	<!-- Elements -->
+	<xs:element name="resources" type="CT_Resources"/>
+	<xs:element name="displacement2d" type="CT_Displacement2D"/>
+	<xs:element name="disp2dgroup" type="CT_Disp2DGroup"/>
+	<xs:element name="disp2dcoord" type="CT_Disp2DCoord"/>
+</xs:schema> 
 ```
 
 
