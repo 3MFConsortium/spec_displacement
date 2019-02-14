@@ -29,7 +29,7 @@
   * [Chapter 2. Resources](#chapter-2-resources)
     + [2.1 Displacement2D](#21-displacement2d)
     + [2.2 Disp2DGroup](#22-disp2dgroup)
-    + [2.2.1 Disp2DCoords](#221-disp2dcoords)
+      - [2.2.1 Disp2DCoords](#221-disp2dcoords)
   * [Chapter 3. Usage rules and interpretation](#chapter-3-usage-rules-and-interpretation)
 - [Part II. Appendixes](#part-ii-appendixes)
   * [Appendix A. Glossary](#appendix-a-glossary)
@@ -128,7 +128,7 @@ If the channel attribute is not specified, it defauls to the G-green channel for
 
 The alpha channel that might be optionally specified in PNG images MUST be ignored for the displacement texture.
 
-The displacement texture values range are independant from the iamge coding range, either 8-bit or 16-bit. The minimum value in the image MUST be mapped to the displacement texture value of -1.0, the center value will be mapped to 0.0 and the maximum value in the image MUST be mapped to 1.0. Any intermediate value MUST be linearly interpolated into the range [ -1.0, 1.0 ]. For example for a 8-bit value in the range [0, 255], the 0 will be mapped to -1.0, the 128 will be mapped to 0.0 and to 255 will be mapped to 1.0.
+The displacement texture values range are independant from the image coding range, either 8-bit or 16-bit, and normalized to [0, 1] range. For this normalization to take place, it is necessary to obtain a normalized displacement value by dividing each channel by 255 (or 2<sup>n</sup>-1, where n is the number of bits per channel).
 
 **tilestyleu, tilestylev** - The tile style of wrap essentially means that the same displacement texture SHOULD be repeated in the specified axis (both in the positive and negative directions), for the axis value. The tile style of mirror means that each time the displacement texture width or height is exceeded, the next repetition of the texture SHOULD be reflected across a plane perpendicular to the axis in question. The tile style of clamp means all Displacement 2D Coordinates outside of the range zero to one will be assigned the displacement value of the nearest edge pixel. The tile style of none means that all Displacement 2D Coordinates outside the range zero to one will not have a displacement and stay on the triangle's surface.
 
