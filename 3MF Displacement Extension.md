@@ -34,7 +34,10 @@
       - [2.3.1 NormVector](#231-normvector)
   * [Chapter 3. Mesh Triangles](#chapter-3-mesh-triangles)
 	+ [3.1 Triangle](#31-triangle)
-  * [Chapter 4. Usage rules and interpretation](#chapter-4-usage-rules-and-interpretation)
+  * [Chapter 4. Usage rules](#chapter-4-usage-rules)
+	+ [4.1 File rule](#41-fill-rule)
+	+ [4.2 Adjacent Triangles](#42-adjacent-triangles)
+	+ [4.3 Displacement Map and Properties](#43-displacement-map-and-properties)
 - [Part II. Appendixes](#part-ii-appendixes)
   * [Appendix A. Glossary](#appendix-a-glossary)
   * [Appendix B. 3MF XSD Schema](#appendix-b-3mf-xsd-schema)
@@ -236,24 +239,38 @@ Element **\<triangle>**
 | d1 | **ST\_ResourceIndex** | | | Displacement map index for the first vertex of the triangle. |
 | d2 | **ST\_ResourceIndex** | | | Displacement map index for the second vertex of the triangle. |
 | d3 | **ST\_ResourceIndex** | | | Displacement map index for the third vertex of the triangle. |
-| did | **ST\_ResourceID** | | | Displacement map id for the triangle. || @anyAttribute | | | | |
+| did | **ST\_ResourceID** | | | Displacement map id for the triangle. |
+| @anyAttribute | | | | |
 
 In addition to the \<triangle> element specified in the 3MF core specification ([4.1.4.1 Triangle](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#4141-triangle)), the \<triangle> element is extended with the optional displacement map for each vertex.
 
-The displacement applied to each vertex (d1, d2, d3) allow displacement to be defined across the triangle by mapping to the displacement texture and the normalized displacement vector, where interpolation of the displacement normalized vector is defined as the linear convex combination and then normalized.
+The displacement map applied to each vertex (d1, d2, d3) allow displacement to be defined across the triangle by mapping to the displacement texture and the normalized displacement vector, where interpolation of the displacement normalized vector is defined as the linear convex combination and then normalized.
 
-The displacement group is specified by the did attribute. Since this is applied to the whole triangle, it implicitly forces the three displacement map indeces to be from the same group. If a displacement is defined, all did, d1, d2, and d3 MUST be specified.
+The displacement group is specified by the did attribute. Since this is applied to the whole triangle, it implicitly forces the three displacement map indeces to be from the same group. If a displacement is defined, all d1, d2, d3 and did MUST be specified.
 
 Note: The displacement vectors, together with the triangle orientation, are affected by the sign of the determinant of the transformation as described in the 3MF core specification ([Section 4.1 Meshes](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#41-meshes)).
 
-# Chapter 4. Usage rules and interpretation
-TODO:
-- depth > / < 0 => unification / intersection of volumes
-- Normal field illustration
-- Normal field is not a normal field. Consistently call it displacement field?
-- Should consumers clip with simple or fine geometry?
-- Consistent with multiproperties?
-- Do we need a "target resolution"?
+# Chapter 4. Usage rules
+
+There are a few rules for interpreting the displacement maps for obtaining the final shape: fill rule, adjacent triangles and triangle properties.
+
+## 4.1 File rule
+
+When applying the displacement map to a mesh, the resultant shape might be extruded (enlarged), or eroded (shrunk). This shape change might result on additional shape self-intersections or new holes when two surfaces have an overlapping erosion.
+
+The final shape MUST be resolved by applying the Fill Rule as defined in the 3MF core specification ([4.1.1 Fill Rule](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#411-fill-rule))
+
+## 4.2 Adjacent Triangles
+
+When specifying the displacement on two adjacent triangles there MIGHT either be continuity or discontinuity.
+
+TBD explain with some examples.
+
+## 4.3 Displacement Map and Properties
+
+The displacement map MIGHT be combined with another property, for example color, color textures, multiproperties, as defined in the [3MF Materials and Properties Extension](https://github.com/3MFConsortium/spec_materials/blob/master/3MF%20Materials%20Extension.md). When combined, the properties are first applied to the triangle and then the triangle with the properties MUST be displaced by the displacement map.
+
+TBD: examples: color gradient and texture.
 
 # Part II. Appendixes
 
