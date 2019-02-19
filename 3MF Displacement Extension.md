@@ -35,7 +35,7 @@
   * [Chapter 3. Mesh Triangles](#chapter-3-mesh-triangles)
 	+ [3.1 Triangle](#31-triangle)
   * [Chapter 4. Usage rules](#chapter-4-usage-rules)
-	+ [4.1 File rule](#41-fill-rule)
+	+ [4.1 Fill Rule](#41-fill-rule)
 	+ [4.2 Adjacent Triangles](#42-adjacent-triangles)
 	+ [4.3 Displacement Map and Properties](#43-displacement-map-and-properties)
 - [Part II. Appendixes](#part-ii-appendixes)
@@ -254,7 +254,7 @@ Note: The displacement vectors, together with the triangle orientation, are affe
 
 There are a few rules for interpreting the displacement maps for obtaining the final shape: fill rule, adjacent triangles and triangle properties.
 
-## 4.1 File rule
+## 4.1 Fill Rule
 
 When applying the displacement map to a mesh, the resultant shape might be extruded (enlarged), or eroded (shrunk). This shape change might result on additional shape self-intersections or new holes when two surfaces have an overlapping erosion.
 
