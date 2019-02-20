@@ -256,13 +256,17 @@ There are a few rules for interpreting the displacement maps for obtaining the f
 
 ## 4.1 Fill Rule
 
-When applying the displacement map to a mesh, the resultant shape might be extruded (enlarged), or eroded (shrunk). This shape change might result on additional shape self-intersections or new holes when two surfaces have an overlapping erosion.
+When applying the displacement map to a mesh, the resultant shape might be extruded (enlarged), or eroded (shrunk). This shape change might result on additional shape self-intersections or new holes when two surfaces have an overlapped erosion.
 
-The final shape MUST be resolved by applying the Fill Rule as defined in the 3MF core specification ([4.1.1 Fill Rule](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#411-fill-rule))
+The final shape MUST be resolved by applying the Fill Rule as defined in the 3MF core specification ([4.1.1 Fill Rule](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#411-fill-rule)).
 
 ## 4.2 Adjacent Triangles
 
-When specifying the displacement on two adjacent triangles there MIGHT either be continuity or discontinuity.
+When specifying the displacement on two adjacent triangles there MIGHT either be continuity or discontinuity in the join.
+
+If the common vertices of two connected triangles, for each vectex, have a displacement map sharing the same NormVectorGroup and same NormVector entry, the consumer MUST preserve continuity, even if they have different u,v mapping or Displacement2D texture. The continuity is preserved by connecting the displaced surfaces of both triangles.
+
+Otherwise if any of the vertex do not share same NormaVectorGrop and same NormVector index the consumer MUST not preserve continuity. The consumer MUST connect each displaced surface through the triangle's shared edge.
 
 TBD explain with some examples.
 
