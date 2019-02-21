@@ -185,7 +185,7 @@ Element **\<disp2dcoords>**
 
 Displacement coordinates map a vertex of a triangle to a position in image space (U, V coordinates). Displacement mapping allows high-resolution color bitmaps to be applied to any surface defining the offset in the range [0, 1] used to obtain the new geometry by the displacement of the surface triangle.
 
-The lower left corner of the texture is the u, v coordinate (0,0), and the upper right coordinate is (1,1). The u,v values are not restricted to this range. When the u,v coordinates exceed the (0,0)-(1,1) range the tilestypeu, tilestypev will be applied according to [2.1 Displacement2D](#21-displacement2d).
+The lower left corner of the texture is the u, v coordinate (0,0), and the upper right coordinate is (1,1). The UV values are not restricted to this range. When the UV coordinates exceed the (0,0)-(1,1) range the tilestypeu, tilestypev will be applied according to [2.1 Displacement2D](#21-displacement2d).
 
 ## 2.3 NormVectorGroup
 Element **\<normvectorgroup>**
@@ -262,23 +262,15 @@ The final shape MUST be resolved by applying the Fill Rule as defined in the 3MF
 
 When specifying the displacement on two adjacent triangles there MIGHT either be continuity or discontinuity in the join.
 
-If the common vertices of two connected triangles, for each vectex, have a displacement map sharing the same NormVectorGroup and same NormVector entry, the consumer MUST preserve continuity, even if they have different u,v mapping or Displacement2D texture. The continuity is preserved by connecting the displaced surfaces of both triangles.
+If the common vertices of two connected triangles, for each vectex, have a displacement map sharing the same NormVectorGroup and same NormVector entry, the consumer MUST preserve continuity, even if they have different UV mapping or Displacement2D texture. The continuity is preserved by connecting the displaced surfaces of both triangles.
 
 Otherwise if any of the vertex do not share same NormaVectorGrop and same NormVector index the consumer MUST not preserve continuity. The consumer MUST connect each displaced surface through the triangle's shared edge.
 
 The following examples show a simplified 2D view of two sides and how the displaced surfaces get connected.
 
-| ![Traingle with dispalcement vectors and depth](images/displacement_triangle.png) | ![Texture referenced by triangle](images/displacement_scalar.png) |
+| ![Adjacent triangles, even with different UV mapping, but with coincident normal index are directly connected](images/4.2.adjacent_cont.png) | ![Adjacent triangles, even with the same UV mapping, but with different normal index are connected trough the common vertex](images/4.2.adjacent_jump.png) |
 | :---: | :---: | :---: |
-| Traingle with dispalcement vectors and depth encoded in texture. | Texture referenced by triangle. The region referenced by the UV coordinates is highlighted. |
-
-##### Figure 4-1: Adjacent triangles, even with different u,v mapping, but with coincident normal index are directly connected.
-
-![Adjacent with continuity](images/4.2.adjacent_cont.png)
-
-##### Figure 4-2: Adjacent triangles, even with the same u,v mapping, but with different normal index are connected trough the common vertex.
-
-![Adjacent with continuity](images/4.2.adjacent_jump.png)
+| Adjacent triangles, even with different UV mapping, but with coincident normal index are directly connected. | Adjacent triangles, even with the same UV mapping, but with different normal index are connected trough the common vertex. |
 
 ## 4.3 Displacement Map and Properties
 
@@ -444,7 +436,6 @@ elementFormDefault="unqualified" attributeFormDefault="unqualified" blockDefault
 # Appendix C. Standard Namespace
 
 | | |
-| --- | --- |
 | --- | --- |
 |Displacement | [http://schemas.microsoft.com/3dmanufacturing/displacement/2018/05](http://schemas.microsoft.com/3dmanufacturing/displacement/2018/05) |
 
