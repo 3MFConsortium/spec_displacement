@@ -266,11 +266,11 @@ If the common vertices of two connected triangles, for each vectex, have a displ
 
 Otherwise if any of the vertex do not share same NormaVectorGrop and same NormVector index the consumer MUST not preserve continuity. The consumer MUST connect each displaced surface through the triangle's shared edge.
 
-The following examples show a simplified 2D view of two sides and how the displaced surfaces get connected.
+The following examples show a simplified 2D view of two sides and how the displaced surfaces get connected along the shared edge (vertex in the 2D view).
 
 | ![Adjacent connected](images/4.2.adjacent_cont.png) | ![Adjacent not connected](images/4.2.adjacent_jump.png) |
 | :---: | :---: |
-| Adjacent triangles, even with different UV mapping, but with coincident normal index are directly connected. | Adjacent triangles, even with the same UV mapping, but with different normal index are connected trough the common vertex. |
+| Adjacent sides, even with different UV mapping but with coincident normal index, are directly connected from the new surfaces. | Adjacent sides, even with the same UV mapping but with different normal indices, are connected trough the common vertex. |
 
 ## 4.3 Displacement Map and Properties
 
