@@ -268,7 +268,7 @@ Otherwise if any of the vertex do not share same NormaVectorGrop and same NormVe
 
 The following examples show a simplified 2D view of two sides and how the displaced surfaces get connected.
 
-| ![Adjacent triangles connected](images/4.2.adjacent_cont.png) | ![Adjacent triangles not connected](images/4.2.adjacent_jump.png) |
+| ![Adjacent connected](images/4.2.adjacent_cont.png) | ![Adjacent not connected](images/4.2.adjacent_jump.png) |
 | :---: | :---: |
 | Adjacent triangles, even with different UV mapping, but with coincident normal index are directly connected. | Adjacent triangles, even with the same UV mapping, but with different normal index are connected trough the common vertex. |
 
