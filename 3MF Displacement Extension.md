@@ -20,10 +20,10 @@
 ## Table of Contents
 
 - [Preface](#preface)
-  * [About this Specification](#11-about-this-specification)
-  * [Document Conventions](#12-document-conventions)
-  * [Language Notes](#13-language-notes)
-  * [Software Conformance](#14-software-conformance)
+  * [About this Specification](#about-this-specification)
+  * [Document Conventions](#document-conventions)
+  * [Language Notes](#language-notes)
+  * [Software Conformance](#software-conformance)
 - [Part I: 3MF Documents](#part-i-3mf-documents)
   * [Chapter 1. Overview of Additions](#chapter-1-overview-of-additions)
   * [Chapter 2. Resources](#chapter-2-resources)
@@ -49,7 +49,7 @@
 
 # Preface
 
-## 1.1. About this Specification
+## About this Specification
 
 This 3MF displacement specification is an extension to the core 3MF specification. This document cannot stand alone and only applies as an addendum to the core 3MF specification. Usage of this and any other 3MF extensions follow an a la carte model, defined in the core 3MF specification.
 
@@ -61,7 +61,7 @@ The information contained in this specification is subject to change. Every effo
 
 This extension MUST be used only with Core specification 1.x.
 
-## 1.2. Document Conventions
+## Document Conventions
 
 See [the 3MF Core Specification conventions](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#document-conventions).
 
@@ -93,7 +93,7 @@ This means that a displacement information of a triangle is given by
 - A displacement direction for each corner which can be interpolated linearly on the surface
 
 | ![Triangle with displacement vectors and depth](images/displacement_triangle.png) | ![Texture referenced by triangle](images/displacement_scalar.png) |
-| :---: | :---: | :---: |
+| :---: | :---: |
 | Triangle with displacement vectors and depth encoded in texture. | Texture referenced by triangle. The region referenced by the UV coordinates is highlighted. |
 
 This document describes new elements, each of which is OPTIONAL for producers, but MUST be supported by consumers that specify support for this displacement extension of 3MF.
@@ -269,7 +269,7 @@ Otherwise if any of the vertex do not share same NormaVectorGrop and same NormVe
 The following examples show a simplified 2D view of two sides and how the displaced surfaces get connected.
 
 | ![Adjacent triangles connected](images/4.2.adjacent_cont.png) | ![Adjacent triangles not connected](images/4.2.adjacent_jump.png) |
-| :---: | :---: | :---: |
+| :---: | :---: |
 | Adjacent triangles, even with different UV mapping, but with coincident normal index are directly connected. | Adjacent triangles, even with the same UV mapping, but with different normal index are connected trough the common vertex. |
 
 ## 4.3 Displacement Map and Properties
