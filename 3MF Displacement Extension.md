@@ -437,9 +437,8 @@ elementFormDefault="unqualified" attributeFormDefault="unqualified" blockDefault
 
 | | |
 | --- | --- |
-|LaserToolpath    |  [http://schemas.microsoft.com/3dmanufacturing/lasertoolpath/2018/05](http://schemas.microsoft.com/3dmanufacturing/lasertoolpath/2018/05 ) |
-|LaserToolpathLayer | [http://schemas.microsoft.com/3dmanufacturing/lasertoolpathlayer/2018/05](http://schemas.microsoft.com/3dmanufacturing/lasertoolpathlayer/2018/05 ) |
-
+| --- | --- |
+|Displacement | [http://schemas.microsoft.com/3dmanufacturing/displacement/2018/05](http://schemas.microsoft.com/3dmanufacturing/displacement/2018/05) |
 
 # Appendix D: Example file
 
