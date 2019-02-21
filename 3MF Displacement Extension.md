@@ -512,11 +512,6 @@ elementFormDefault="unqualified" attributeFormDefault="unqualified" blockDefault
 </model>
 ```
 
-## Toolpathlayer
-```xml
-<?xml version="1.0" encoding="utf-8"?> ...
-```
-
 # References
 
 **BNF of Generic URI Syntax**
