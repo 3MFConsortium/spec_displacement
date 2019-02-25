@@ -13,7 +13,7 @@
 
 
 
-| **Version** | 0.4 |
+| **Version** | 0.41 |
 | --- | --- |
 | **Status** | Draft |
 
@@ -84,13 +84,13 @@ See [the 3MF Core Specification software conformance](https://github.com/3MFCons
 | Sphere mesh (27.500 triangles, 411kB). | Sphere mesh with greyscale displacement map (27.500 triangles, 1.2MB) | Retesselated Sphere mesh (660.000 triangles, 12.1MB)|
 
 The rationale of the displacement specification extension is to enhance mesh geometry by a displacement mapping.
-This is achieved by assigning a displacements to the conventional 3D mesh geometry and a scalar map that describes the offset in the direction of the displacement vector.
-This allows a very memory effective, accurate description of complex geometry.
+This is achieved displacing the 3D mesh geometry using a scalar map that describes the offset in the direction of the displacement vector.
+This allows a very memory effective and accurate description of complex geometry.
 
-This means that a displacement information of a triangle is given by
+This means that the displacement information of a triangle is given by
 - UV coordinates for each corner
 - A scalar 2D image for representing the "heightmap"
-- A displacement direction for each corner which can be interpolated linearly on the surface
+- A displacement direction for each corner which can be linearly interpolated on the surface
 
 | ![Triangle with displacement vectors and depth](images/displacement_triangle.png) | ![Texture referenced by triangle](images/displacement_scalar.png) |
 | :---: | :---: |
@@ -130,7 +130,7 @@ A displacement texture resource provides information about texture image data, f
 
 **contenttype** - The only supported content types are JPEG and PNG, as more specifically specified in the 3MF core spec under the [6.1. Thumbnail](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#61-thumbnail) section.
 
-**channel** - The channel attribute select which of the RGB channels defined the displacement texture. 
+**channel** - The channel attribute select which of the RGB channels defines the displacement texture. 
 
 If the specification says that a certain value is sampled from the texture’s R channel, but the referenced texture is only monochromatic then grayscale channel MUST be interpreted as the R color channel. Similarly, color values sampled from a monochromatic texture MUST be interpreted as if all R, G, B color channels shared the same grayscale value.
 
@@ -138,11 +138,9 @@ If the channel attribute is not specified, it defauls to the G-green channel for
 
 The alpha channel that might be optionally specified in PNG images MUST be ignored for the displacement texture.
 
-The displacement texture values range are independant from the image coding range, either 8-bit or 16-bit, and normalized to [0, 1] range. For this normalization to take place, it is necessary to obtain a normalized displacement value by dividing each channel by 255 (or 2<sup>n</sup>-1, where n is the number of bits per channel).
+The displacement texture values range are independent from the image coding range, either 8-bit or 16-bit, and normalized to [0, 1] range. The normalized displacement values are obtained by dividing each channel by 2<sup>n</sup>-1, where n is the number of bits per channel. For example, in an 8-bit image the pixel values MUST be divided by 255.
 
 **tilestyleu, tilestylev** - The tile style of wrap essentially means that the same displacement texture SHOULD be repeated in the specified axis (both in the positive and negative directions), for the axis value. The tile style of mirror means that each time the displacement texture width or height is exceeded, the next repetition of the texture SHOULD be reflected across a plane perpendicular to the axis in question. The tile style of clamp means all Displacement 2D Coordinates outside of the range zero to one will be assigned the displacement value of the nearest edge pixel. The tile style of none means that all Displacement 2D Coordinates outside the range zero to one will not have a displacement and stay on the triangle's surface.
-
-The only supported content types are JPEG and PNG, as more specifically specified in the 3MF core spec under the Thumbnails section.
 
 **filter** - The producer MAY require the use of a specific filter type by specifying either “linear” for bilinear interpolation or “nearest” for nearest neighbor interpolation. The producer SHOULD use “auto” to indicate to the consumer to use the highest quality filter available. If source texture is scaled with the model, the specified filter type MUST be applied to the scaling operation. The default value is “auto”.
 
@@ -160,13 +158,13 @@ Element **\<disp2dgroup>**
 
 A \<disp2dgroup> element acts as a container for texture coordinate properties. The order of these elements forms an implicit 0-based index that is referenced by other elements, such as the \<object> and \<triangle> elements. It also specifies which image to use, via dispid. The referenced \<displacement2d> elements are described above in [2.1 Displacement2D](#21-displacement2d).
 
-The depth attribute define the displacement of the maximum displacement texture value range. the displacement value is computed by:
+The depth attribute defines the displacement of the maximum displacement texture value range. The displacement value is computed by:
 
-	displacement value = dispid * displacement texture value,
+	displacement value = depth * displacement texture value,
 
 where the displacement texture value is in the range [0, 1], and the displacement value is applied in the model unit resolution, as specified in the 3MF core specification ([3.4 Model](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#34-model)).
 
-A positive displacement value especifies an extrusion of the original mesh and a negative displacement value especifies an erosion of the original mesh. (WORDING TBC)
+A positive displacement value especifies an outer extrusion of the original mesh and a negative displacement value especifies an inner extrusion of the original mesh.
 
 To avoid integer overflows, a texture coordinate group MUST contain less than 2^31 disp2dcoords.
 
@@ -185,7 +183,7 @@ Element **\<disp2dcoords>**
 
 Displacement coordinates map a vertex of a triangle to a position in image space (U, V coordinates). Displacement mapping allows high-resolution color bitmaps to be applied to any surface defining the offset in the range [0, 1] used to obtain the new geometry by the displacement of the surface triangle.
 
-The lower left corner of the texture is the u, v coordinate (0,0), and the upper right coordinate is (1,1). The UV values are not restricted to this range. When the UV coordinates exceed the (0,0)-(1,1) range the tilestypeu, tilestypev will be applied according to [2.1 Displacement2D](#21-displacement2d).
+The lower left corner of the texture is the u, v coordinate (0,0), and the upper right coordinate is (1,1). The UV values are not restricted to this range. When the UV coordinates exceed the [0,1] range, the tilestypeu and tilestypev MUST be applied according to the tiling specified in [2.1 Displacement2D](#21-displacement2d).
 
 ## 2.3 NormVectorGroup
 Element **\<normvectorgroup>**
@@ -244,7 +242,7 @@ In addition to the \<triangle> element specified in the 3MF core specification (
 
 The displacement map applied to each vertex (d1, d2, d3) allow displacement to be defined across the triangle by mapping to the displacement texture and the normalized displacement vector, where interpolation of the displacement normalized vector is defined as the linear convex combination and then normalized.
 
-The displacement group is specified by the did attribute. Since this is applied to the whole triangle, it implicitly forces the three displacement map indeces to be from the same group. If a displacement is defined, all d1, d2, d3 and did MUST be specified.
+The displacement group is specified by the did attribute. Since this is applied to the whole triangle, it implicitly forces the three displacement map indices to be from the same group. If any of the displacement attributes is defined, all d1, d2, d3 and did attributes MUST be specified.
 
 Note: The displacement vectors, together with the triangle orientation, are affected by the sign of the determinant of the transformation as described in the 3MF core specification ([Section 4.1 Meshes](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#41-meshes)).
 
@@ -254,7 +252,7 @@ There are a few rules for interpreting the displacement maps for obtaining the f
 
 ## 4.1 Fill Rule
 
-When applying the displacement map to a mesh, the resultant shape might be extruded (enlarged), or eroded (shrunk). This shape change might result on additional shape self-intersections or new holes when two surfaces have an overlapped erosion.
+When applying the displacement map to a mesh, the resultant shape might be extruded (enlarged), or substraction (shrunk). This shape change might result on additional shape self-intersections or new holes when two surfaces have an overlapped erosion.
 
 The final shape MUST be resolved by applying the Fill Rule as defined in the 3MF core specification ([4.1.1 Fill Rule](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#411-fill-rule)).
 
@@ -264,7 +262,7 @@ When specifying the displacement on two adjacent triangles there MIGHT either be
 
 If the common vertices of two connected triangles, for each vectex, have a displacement map sharing the same NormVectorGroup and same NormVector entry, the consumer MUST preserve continuity, even if they have different UV mapping or Displacement2D texture. The continuity is preserved by connecting the displaced surfaces of both triangles.
 
-Otherwise if any of the vertex do not share same NormaVectorGrop and same NormVector index the consumer MUST not preserve continuity. The consumer MUST connect each displaced surface through the triangle's shared edge.
+Otherwise if any of the vertices do not share same NormVectorGrop and same NormVector index the consumer MUST preserve continuity by connecting each displaced surface through the triangle's shared edge.
 
 The following examples show a simplified 2D view of two sides and how the displaced surfaces get connected along the shared edge (vertex in the 2D view).
 
@@ -275,6 +273,8 @@ The following examples show a simplified 2D view of two sides and how the displa
 ## 4.3 Displacement Map and Properties
 
 The displacement map MIGHT be combined with another property, for example color, color textures, multiproperties, as defined in the [3MF Materials and Properties Extension](https://github.com/3MFConsortium/spec_materials/blob/master/3MF%20Materials%20Extension.md). When combined, the properties are first applied to the triangle and then the triangle with the properties MUST be displaced by the displacement map.
+
+TBD: what color is obtained in the vertical surfaces generated by a sharp displacement?
 
 # Part II. Appendixes
 
