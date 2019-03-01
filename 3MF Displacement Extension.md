@@ -120,7 +120,7 @@ This means that a displacement information of a triangle is given by
 - A scalar 2D image for representing the "heightmap"
 - A displacement direction for each corner which can be interpolated linearly on the surface
 
-| ![Triangle with dispalcement vectors and depth](images/displacement_triangle.png) | ![Texture referenced by triangle](images/displacement_scalar.png) |
+| ![Triangle with displacement vectors and depth](images/displacement_triangle.png) | ![Texture referenced by triangle](images/displacement_scalar.png) |
 | :---: | :---: | :---: |
 | Traingle with dispalcement vectors and depth encoded in texture. | Texture referenced by triangle. The region referenced by the UV coordinates is highlighted. |
 
