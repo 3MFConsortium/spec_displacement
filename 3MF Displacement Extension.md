@@ -122,7 +122,7 @@ This means that a displacement information of a triangle is given by
 
 | ![Triangle with displacement vectors and depth](images/displacement_triangle.png) | ![Texture referenced by triangle](images/displacement_scalar.png) |
 | :---: | :---: | :---: |
-| Traingle with dispalcement vectors and depth encoded in texture. | Texture referenced by triangle. The region referenced by the UV coordinates is highlighted. |
+| Triangle with displacement vectors and depth encoded in texture. | Texture referenced by triangle. The region referenced by the UV coordinates is highlighted. |
 
 TODO: comparision to/distinction from normal mapping, bump mapping
 
