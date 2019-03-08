@@ -157,6 +157,7 @@ Element **\<disp2dgroup>**
 | --- | --- | --- | --- | --- |
 | id | **ST\_ResourceID** | required |   | ResourceID of this Disp2dGroup resource |
 | dispid | **ST\_ResourceID** | required |   | ID of the Displacement map used in this group |
+| nid | **ST\_ResourceID** | | | ID of the normalized vector group used in this group |
 | depth | **ST\_Number** | required |   | Scaling factor for the values in the displacement map |
 | offset | **ST\_Number** |  |  0 | Offset after scaling the values in the displacement map |
 | @anyAttribute | | | | |
@@ -187,7 +188,6 @@ Element **\<disp2dcoords>**
 | u | **ST\_Number** | required |   | The u-coordinate within the texture, horizontally right from the origin in the lower left of the texture. |
 | v | **ST\_Number** | required |   | The v-coordinate within the texture, vertically up from the origin in the lower left of the texture.|
 | n | **ST\_ResourceIndex** | required |   | Index to the normalized displacement vector to apply to these coordinates |
-| nid | **ST\_ResourceID** | | | ID of the normalized vector group used in this group |
 | @anyAttribute | | | | |
 
 Displacement coordinates map a vertex of a triangle to a position in image space (U, V coordinates). Displacement mapping allows high-resolution color bitmaps to be applied to any surface defining the offset in the range [0, 1] used to obtain the new geometry by the displacement of the surface triangle.
