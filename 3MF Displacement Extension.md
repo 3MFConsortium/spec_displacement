@@ -63,17 +63,17 @@ This extension MUST be used only with Core specification 1.x.
 
 ## Document Conventions
 
-See [the 3MF Core Specification conventions](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#document-conventions).
+See the [3MF Core Specification conventions](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#document-conventions).
 
-In this extension specification, as an example, the prefix "d" maps to the xml-namespace "http://schemas.microsoft.com/3dmanufacturing/displacement/2018/05". See [Appendix C. Standard Namespace](#appendix-c-standard-namespace).
+In this extension specification, as an example, the prefix "po" maps to the xml-namespace "http://schemas.hp.com/3dmanufacturing/partoptimization/2019/04". See Appendix [C.3 Namespaces](#c3-namespaces).
 
 ## Language Notes
 
-See [the 3MF Core Specification language notes](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#language-notes).
+See the [3MF Core Specification language notes](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#language-notes).
 
 ## Software Conformance
 
-See [the 3MF Core Specification software conformance](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#software-conformance).
+See the [3MF Core Specification software conformance](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#software-conformance).
 
 # Part I: 3MF Documents
 
@@ -178,7 +178,7 @@ A positive displacement value specifies an outer extrusion of the original mesh 
 
 To avoid integer overflows, a texture coordinate group MUST contain less than 2^31 disp2dcoords.
 
-## 2.2.1 Disp2DCoords
+### 2.2.1 Disp2DCoords
 Element **\<disp2dcoords>**
 
 ![Disp2dCoords XML structure](images/xsd_disp2dcoords.png)
@@ -208,7 +208,7 @@ A \<normvectorgroup> element acts as a container for normalized vectors properti
 
 To avoid integer overflows, a texture coordinate group MUST contain less than 2^31 disp2dcoords.
 
-## 2.3.1 NormVector
+### 2.3.1 NormVector
 Element **\<normvector>**
 
 ![NormVector XML structure](images/xsd_normvector.png)
