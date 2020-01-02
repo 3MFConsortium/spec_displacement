@@ -251,7 +251,7 @@ In addition to the \<triangle> element specified in the 3MF core specification (
 
 The displacement map applied to each vertex (d1, d2, d3) allow displacement to be defined across the triangle by mapping to the displacement texture and the normalized displacement vector, where interpolation of the displacement normalized vector is defined as the linear convex combination and then normalized.
 
-The displacement group is specified by the did attribute. Since this is applied to the whole triangle, it implicitly forces the three displacement map indices to be from the same group. If d1 is specified then the did attribute MUST be specified. If d2 or d3 is unespecified then d1 is used for the entire triangle. If d1 is unespecified then no displacement map is applied to the triangle.
+The displacement group is specified by the did attribute. Since this is applied to the whole triangle, it implicitly forces the three displacement map indices to be from the same group. If d1 is specified then the did attribute MUST be specified. If d2 or d3 is unspecified then d1 is used for the entire triangle. If d1 is unspecified then no displacement map is applied to the triangle.
 
 Note: The displacement vectors, together with the triangle orientation, are affected by the sign of the determinant of the transformation as described in the 3MF core specification ([Section 4.1 Meshes](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#41-meshes)).
 
