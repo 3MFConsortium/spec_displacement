@@ -13,7 +13,7 @@
 
 
 
-| **Version** | 0.51 |
+| **Version** | 0.54 |
 | --- | --- |
 | **Status** | Draft |
 
@@ -90,9 +90,9 @@ This is achieved displacing the 3D mesh geometry using a scalar map that describ
 This allows a very memory effective and accurate description of complex geometry.
 
 This means that the displacement information of a triangle is given by
-- UV coordinates for each corner
-- A scalar 2D image for representing the "heightmap"
-- A displacement direction for each corner which can be linearly interpolated on the surface
+- UV coordinates for each corner.
+- A scalar 2D image for representing the "heightmap".
+- A displacement direction for each corner which can be linearly interpolated on the surface.
 
 ##### Figure 2-1: Example of displacement mapping from a texture.
 
@@ -253,7 +253,7 @@ The displacement map applied to each vertex (d1, d2, d3) allow displacement to b
 
 The displacement group is specified by the did attribute. Since this is applied to the whole triangle, it implicitly forces the three displacement map indices to be from the same group. If d1 is specified then the did attribute MUST be specified. If d2 or d3 is unspecified then d1 is used for the entire triangle. If d1 is unspecified then no displacement map is applied to the triangle.
 
-Note: The displacement vectors, together with the triangle orientation, are affected by the sign of the determinant of the transformation as described in the 3MF core specification ([Section 4.1 Meshes](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#41-meshes)).
+As the displacement maps applied to a mesh defines a new shape, any transform to the object MUST be applied to that new shape.
 
 # Chapter 4. Usage rules
 
@@ -300,8 +300,10 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?> 
-<xs:schema xmlns="http://schemas.microsoft.com/3dmanufacturing/displacement/2018/05" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace" targetNamespace="http://schemas.microsoft.com/3dmanufacturing/displacement/2018/05" 
-elementFormDefault="unqualified" attributeFormDefault="unqualified" blockDefault="#all">
+<xs:schema xmlns="http://schemas.microsoft.com/3dmanufacturing/displacement/2018/05"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace"
+	targetNamespace="http://schemas.microsoft.com/3dmanufacturing/displacement/2018/05"
+	elementFormDefault="unqualified" attributeFormDefault="unqualified" blockDefault="#all">
 	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd"/>
 	<xs:annotation> 
 		<xs:documentation><![CDATA[   Schema notes: 
@@ -396,6 +398,7 @@ elementFormDefault="unqualified" attributeFormDefault="unqualified" blockDefault
 			<xs:enumeration value="R"/>
 			<xs:enumeration value="G"/>
 			<xs:enumeration value="B"/>
+			<xs:enumeration value="A"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="ST_TileStyle">
@@ -458,69 +461,51 @@ elementFormDefault="unqualified" attributeFormDefault="unqualified" blockDefault
 ## 3D model
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<model unit="millimeter" xml:lang="en-US" xmlns:d="http://schemas.microsoft.com/3dmanufacturing/displacement/2018/05" xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">
-  <metadata name="CreationDate">2013-10-07</metadata>
-  <metadata name="Copyright">© Microsoft Corporation 2013</metadata>
-  <metadata name="Designer">Microsoft Corporation</metadata>
-  <metadata name="ChangeHistory">2013-10-07 Initial model</metadata>
-  <metadata name="Title">Cube</metadata>
-  <metadata name="ModificationDate">2014-03-27</metadata>
-  <metadata name="LicenseTerms">All rights reserved</metadata>
-  <metadata name="Description">Cube</metadata>
+<model xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02"
+  xmlns:d="http://schemas.microsoft.com/3dmanufacturing/displacement/2018/05"
+  unit="millimeter" xml:lang="en-US">
   <resources>
-    <d:displacement2d id="3" path="/3D/Texture/paperbag_mono.png" contenttype="image/png" tilestyleu="wrap" tilestylev="wrap" />
-    <d:normvectorgroup id="8" >
-      <d:normvector nx="0" ny="-1" nz="0" />
-      <d:normvector nx="0" ny="0" nz="1" />
-      <d:normvector nx="0" ny="-0.707" nz="0.707" />
+    <d:displacement2d id="10" path="/3D/Textures/label_mono.png" contenttype="image/png"/>
+    <d:normvectorgroup id="24">
+      <d:normvector nx="-0.704662" ny="-0.704662" nz="-0.0830916"/>
+      <d:normvector nx="0.704672" ny="-0.704644" nz="-0.0831468"/>
+      <d:normvector nx="2.02911e-5" ny="2.00578e-5" nz="1"/>
+      <d:normvector nx="-0.704644" ny="0.704673" nz="-0.0831459"/>
+      <d:normvector nx="0.704655" ny="0.704655" nz="-0.083201"/>
     </d:normvectorgroup>
-    <d:disp2dgroup id="7" dispid="3" depth="1.5" >
-      <d:disp2coord u="0" v="1" nid="8" n="0" />
-      <d:disp2coord u="1" v="1" nid="8" n="0" />
-      <d:disp2coord u="0" v="0" nid="8" n="0" />
-      <d:disp2coord u="1" v="0" nid="8" n="0" />
-      <d:disp2coord u="0" v="2" nid="8" n="1" />
-      <d:disp2coord u="1" v="2" nid="8" n="1" />
-      <d:disp2coord u="0" v="2" nid="8" n="1" />
-      <d:disp2coord u="0" v="1" nid="8" n="2" />
-      <d:disp2coord u="1" v="1" nid="8" n="2" />
+    <d:disp2dgroup id="18" dispid="10" depth="1.5">
+      <d:disp2dcoord u="0" v="0" nid="24" n="0"/>
+      <d:disp2dcoord u="1" v="0" nid="24" n="1"/>
+      <d:disp2dcoord u="0.50005" v="1" nid="24" n="2"/>
+      <d:disp2dcoord u="1" v="1" nid="24" n="3"/>
+      <d:disp2dcoord u="0" v="5.96046e-008" nid="24" n="1"/>
+      <d:disp2dcoord u="1" v="5.96046e-008" nid="24" n="0"/>
+      <d:disp2dcoord u="-5.96046e-008" v="0" nid="24" n="1"/>
+      <d:disp2dcoord u="0" v="1" nid="24" n="4"/>
+      <d:disp2dcoord u="1" v="0" nid="24" n="4"/>
     </d:disp2dgroup>
-    <object id="4" type="model">
+    <object id="9" name="Scene - DispMaps_13" thumbnail="/Thumbnails/Scene_DispMaps_13.png" type="model">
       <mesh>
         <vertices>
-          <vertex x="0" y="42.998" z="39.998" />
-          <vertex x="39.998" y="42.998" z="39.998" />
-          <vertex x="0" y="82.998" z="39.998" />
-          <vertex x="39.998" y="82.998" z="0" />
-          <vertex x="0" y="42.998" z="0" />
-          <vertex x="0" y="82.998" z="0" />
-          <vertex x="39.998" y="42.998" z="0" />
-          <vertex x="39.998" y="82.998" z="39.998" />
+          <vertex x="152.345" y="84.2476" z="16.92"/>
+          <vertex x="192.345" y="84.2476" z="16.92"/>
+          <vertex x="172.347" y="104.25" z="56.918"/>
+          <vertex x="152.345" y="124.248" z="16.92"/>
+          <vertex x="192.345" y="124.248" z="16.92"/>
         </vertices>
         <triangles>
-          <triangle v1="0" v2="1" v3="2" d:did="7" d:d1="7'" d:d2="8" d:d3="4" />
-          <triangle v1="3" v2="4" v3="5" />
-          <triangle v1="4" v2="3" v3="6" />
-          <triangle v1="7" v2="2" v3="1" d:did="7" d:d1="5" d:d2="6" d:d3="1" />
-          <triangle v1="4" v2="6" v3="1" d:did="7" d:d1="2" d:d2="3" d:d3="1" />
-          <triangle v1="4" v2="2" v3="5" />
-          <triangle v1="7" v2="1" v3="6" />
-          <triangle v1="5" v2="2" v3="7" />
-          <triangle v1="4" v2="0" v3="2" />
-          <triangle v1="6" v2="3" v3="7" />
-          <triangle v1="1" v2="0" v3="4" d:did="7" d:d1="8" d:d2="7'" d:d3="2" />
-          <triangle v1="7" v2="3" v3="5" />
+          <triangle v1="0" v2="1" v3="2" d:did="18" d:d1="0" d:d2="1" d:d3="2"/>
+          <triangle v1="3" v2="1" v3="0" d:did="18" d:d1="3" d:d2="4" d:d3="5"/>
+          <triangle v1="0" v2="2" v3="3"/>
+          <triangle v1="1" v2="4" v3="2" d:did="18" d:d1="6" d:d2="8" d:d3="2"/>
+          <triangle v1="4" v2="3" v3="2"/>
+          <triangle v1="4" v2="1" v3="3" d:did="18" d:d1="7" d:d2="4" d:d3="3"/>
         </triangles>
       </mesh>
     </object>
-    <object id="5" type="model">
-      <components>
-        <component objectid="4" />
-      </components>
-    </object>
   </resources>
   <build>
-    <item objectid="5" transform="0.999996 0 0 -9.93535e-007 0.999996 -9.02387e-014 1.79176e-006 -7.59051e-007 0.999999 -19.8624 -61.5909 -3.21579" />
+    <item objectid="9"/>
   </build>
 </model>
 ```
