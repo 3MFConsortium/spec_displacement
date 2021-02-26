@@ -13,7 +13,7 @@
 
 
 
-| **Version** | 0.54 |
+| **Version** | 0.55 |
 | --- | --- |
 | **Status** | Draft |
 
@@ -124,7 +124,7 @@ Element **\<displacement2d>**
 | id | **ST\_ResourceID** | required |   | ResourceID of this displacement resource. |
 | path | **ST\_UriReference** | required |   | path to the displacement texture. |
 | contenttype | **ST\_ContentType** | required |   | Content type of the texture resource. PNG or JPEG allowed. |
-| channel | **ST\_ChannelName** | optional | G | Specifies which channel to reference in the displacement texture. Valid values are R, G, B. Ignored for monochromatic images. |
+| channel | **ST\_ChannelName** | optional | G | Specifies which channel to reference in the displacement texture. Valid values are R, G, B, A. Ignored for monochromatic images. |
 | tilestyleu | **ST_TileStyle** |  | wrap | Specifies how tiling should occur in the u axis in order to fill the overall requested area. Valid values are wrap, mirror, clamp, none. |
 | tilestylev | **ST_TileStyle** |  | wrap | Specifies how tiling should occur in the v axis in order to fill the overall requested area. Valid values are wrap, mirror, clamp, none. |
 | filter | **ST_Filter** |  | auto | Specifies the texture filter to apply when scaling the source texture.  Allowed values are “auto”, “linear”, “nearest”. |
@@ -134,13 +134,11 @@ A displacement texture resource provides information about texture image data, f
 
 **contenttype** - The only supported content types are JPEG and PNG, as more specifically specified in the 3MF core spec under the [6.1. Thumbnail](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#61-thumbnail) section.
 
-**channel** - The channel attribute selects which of the RGB channels defines the displacement texture. 
+**channel** - The channel attribute selects which of the R, G, B, or A channels defines the displacement texture. 
 
 If the specification says that a certain value is sampled from the texture’s R channel, but the referenced texture is only monochromatic, the grayscale channel MUST be used. Similarly, color values sampled from a monochromatic texture MUST be interpreted as if all R, G, B color channels shared the same grayscale value.
 
-If the channel attribute is not specified, it defauls to the G-green channel for RGB images, or to the gray scale channel for monochromatic images.
-
-The alpha channel that might be optionally specified in PNG images MUST be ignored for the displacement texture.
+If the channel attribute is not specified, it defauls to the G-green channel for RGB images, or to the grayscale channel for monochromatic images.
 
 The displacement texture values range are independent from the image coding range, either 8-bit or 16-bit, and normalized to [0, 1] range. The normalized displacement values are obtained by dividing each channel by 2<sup>n</sup>-1, where n is the number of bits per channel. For example, in an 8-bit image the pixel values MUST be divided by 255.
 
