@@ -13,7 +13,7 @@
 
 
 
-| **Version** | 0.5.7 |
+| **Version** | 0.6.0 |
 | --- | --- |
 | **Status** | Draft |
 
@@ -63,17 +63,17 @@ This extension MUST be used only with Core specification 1.x.
 
 ## Document Conventions
 
-See [the 3MF Core Specification conventions](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#document-conventions).
+See [the 3MF Core Specification conventions](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#document-conventions).
 
 In this extension specification, as an example, the prefix "d" maps to the xml-namespace "http://schemas.microsoft.com/3dmanufacturing/displacement/2018/05". See Appendix [C.3 Namespaces](#c3-namespaces).
 
 ## Language Notes
 
-See [the 3MF Core Specification language notes](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#language-notes).
+See [the 3MF Core Specification language notes](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#language-notes).
 
 ## Software Conformance
 
-See [the 3MF Core Specification software conformance](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#software-conformance).
+See [the 3MF Core Specification software conformance](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#software-conformance).
 
 # Part I: 3MF Documents
 
@@ -132,7 +132,7 @@ Element **\<displacement2d>**
 
 A displacement texture resource provides information about texture image data, found via the provided path reference, which MUST also be the target of a 3D Texture relationship from the 3D Model part. 
 
-**contenttype** - The only supported content types are JPEG and PNG, as more specifically specified in the 3MF core spec under the [6.1. Thumbnail](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#61-thumbnail) section.
+**contenttype** - The only supported content types are JPEG and PNG, as more specifically specified in the 3MF core spec under the [6.1. Thumbnail](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#61-thumbnail) section.
 
 **channel** - The channel attribute selects which of the R, G, B, or A channels defines the displacement texture. 
 
@@ -170,7 +170,7 @@ The displacement value is computed by:
 
 	displacement value = (depth * displacement texture value) + offset
 
-where the displacement texture value is in the range [0, 1], and the displacement value is applied in the model unit resolution, as specified in the 3MF core specification ([3.4 Model](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#34-model)).
+where the displacement texture value is in the range [0, 1], and the displacement value is applied in the model unit resolution, as specified in the 3MF core specification ([3.4 Model](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#34-model)).
 
 A positive displacement value specifies an outer extrusion of the original mesh and a negative displacement value especifies an inner extrusion of the original mesh.
 
@@ -230,7 +230,7 @@ The normalized displacement vector specifies the direction:
 
 # Chapter 3. Mesh triangles
 
-The 3MF core specification ([4.1.4.1 Triangle](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#4141-triangle)) represents a single face of the mesh, specifying the triangle vertices and the optional properties for each vertex. This specification extends the mesh triangle definition to specify the displacement map for the mesh triangles.
+The 3MF core specification ([4.1.4.1 Triangle](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#4141-triangle)) represents a single face of the mesh, specifying the triangle vertices and the optional properties for each vertex. This specification extends the mesh triangle definition to specify the displacement map for the mesh triangles.
 
 ## 3.1 Triangle
 Element **\<triangle>**
@@ -245,7 +245,7 @@ Element **\<triangle>**
 | did | **ST\_ResourceID** | | | Displacement map id for the triangle. |
 | @anyAttribute | | | | |
 
-In addition to the \<triangle> element specified in the 3MF core specification ([4.1.4.1 Triangle](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#4141-triangle)), the \<triangle> element is extended with the optional displacement map for each vertex.
+In addition to the \<triangle> element specified in the 3MF core specification ([4.1.4.1 Triangle](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#4141-triangle)), the \<triangle> element is extended with the optional displacement map for each vertex.
 
 The displacement map applied to each vertex (d1, d2, d3) allow displacement to be defined across the triangle by mapping to the displacement texture and the normalized displacement vector, where interpolation of the displacement normalized vector is defined as the linear convex combination and then normalized.
 
@@ -261,7 +261,7 @@ There are a few rules for interpreting the displacement maps for obtaining the f
 
 When applying the displacement map to a mesh, the resultant shape might be outer extruded (enlarged), or inner extruded (shrunk). This shape change might result in shape self-intersections or new holes when two surfaces have an overlapping innner extrusion.
 
-The final shape MUST be resolved by applying the Fill Rule as defined in the 3MF core specification ([4.1.1 Fill Rule](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#411-fill-rule)).
+The final shape MUST be resolved by applying the Fill Rule as defined in the 3MF core specification ([4.1.1 Fill Rule](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#411-fill-rule)).
 
 For efficient displacment maps the producer SHOULD not generate self-intersecting displaced shapes, since this MAY cause overhead in the consumer.
 
@@ -273,14 +273,23 @@ If the common vertices of two connected triangles, for each vertex, have a displ
 
 Otherwise if any of the vertices do not share same NormVectorGrop and same NormVector index the consumer MUST preserve continuity by connecting each displaced surface through the triangle's shared edge.
 
-##### Figure 4-1: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are different from the normal of the corresponding triangle. The displacement vectors and the displacement values of each vertex belonging to two neighboring triangles are the same. The new displaced surfaces are connected continuosly.
-![Adjacent continuos](images/4.2.adjacent_cont.png)
+##### Figure 4-1: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same. The displacement values of each vertex belonging to two neighboring triangles are the same, with positive depth. The new displaced surfaces are connected continuosly.
+![Adjacent continuos](images/4.1_adjacent_cont.png)
 
-##### Figure 4-2: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are different from the normal of the corresponding triangle. The displacement vectors of each vertex belonging to two neighboring triangles are the same. The displacements described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different. The new displaced surfaces are directly connected to close the new 3D shape using a flat surface (a line in the 2D view). The new displacement vector is indicated in Red, the section that needs to be filled in is indicated in Green.
-![Adjacent connected](images/4.2.adjacent_direct.png)
+##### Figure 4-2: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same. The displacements value described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different, with positive depth. The new displaced surfaces are directly connected at that vertex to close the new 3D shape using an added segment. The new displacement vector is indicated in Red, the section that needs to be connected is indicated in Green.
+![Adjacent connected](images/4.2_adjacent_direct.png)
 
-##### Figure 4-3: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same as the normal of the corresponding triangle. The displacement vectors of a vertex belonging to two neighboring triangles are different. The displacements described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different. The new displaced surfaces are connected through the common edge in the mesh (common vertex in the 2D view diagram) to close the new 3D shape. This requires two flat surfaces (two lines in the 2D view) indicated in Green.
-![Adjacent not connected](images/4.2.adjacent_jump.png)
+##### Figure 4-3: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same as the normal of the corresponding triangle. The displacements values described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different, with positive depth. The new displaced surfaces are connected through the common vertex in the mesh to close the new 3D shape. This requires two additional segments, as indicated in Green.
+![Adjacent not connected](images/4.3_adjacent_jump.png)
+
+##### Figure 4-4: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same. The displacement values of each vertex belonging to two neighboring triangles are the same, with negative depth. The new displaced surfaces are connected continuosly.
+![Adjacent negative continuos](images/4.4_adjacent_neg_cont.png)
+
+##### Figure 4-5: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same. The displacements value described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different, with negative depth.  The new displaced surfaces are directly connected to close the new 3D shape using an added segment. The new displacement vector is indicated in Red, the section that needs to be connected is indicated in Green.
+![Adjacent negative connected](images/4.5_adjacent_neg_direct.png)
+
+##### Figure 4-6: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same as the normal of the corresponding triangle. The displacements values described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different, with negative depth. The new displaced surfaces are connected through the common vertex in the mesh to close the new 3D shape. This requires two additional segments, as indicated in Green. This produces a self-intersection that MUST be removed using the [Fill Rule in the Core Specification](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#411-fill-rule)
+![Adjacent negative not connected](images/4.6_adjacent_neg_jump.png)
 
 ## 4.3 Displacement Map and Properties
 
@@ -292,7 +301,7 @@ TBD: what color is obtained in the vertical surfaces generated by a sharp displa
 
 ## Appendix A. Glossary
 
-See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_core/blob/master/3MF%20Core%20Specification.md#appendix-a-glossary).
+See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#appendix-a-glossary).
 
 ## Appendix B. 3MF XSD Schema
 
