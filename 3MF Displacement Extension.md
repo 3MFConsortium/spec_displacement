@@ -172,7 +172,7 @@ The displacement value is computed by:
 
 where the displacement texture value is in the range [0, 1], and the displacement value is applied in the model unit resolution, as specified in the 3MF core specification ([3.4 Model](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#34-model)).
 
-A positive displacement value specifies an outer extrusion of the original mesh and a negative displacement value especifies an inner extrusion of the original mesh.
+A positive displacement value specifies an embossing of the original mesh and a negative displacement value especifies a debossing of the original mesh.
 
 To avoid integer overflows, a texture coordinate group MUST contain less than 2^31 disp2dcoords.
 
@@ -259,7 +259,7 @@ There are a few rules for interpreting the displacement maps for obtaining the f
 
 ## 4.1 Fill Rule
 
-When applying the displacement map to a mesh, the resultant shape might be outer extruded (enlarged), or inner extruded (shrunk). This shape change might result in shape self-intersections or new holes when two surfaces have an overlapping innner extrusion.
+When applying the displacement map to a mesh, the resultant shape might be embossed, or debossed. This shape change might result in shape self-intersections or new holes when two surfaces have an overlapping innner extrusion.
 
 The final shape MUST be resolved by applying the Fill Rule as defined in the 3MF core specification ([4.1.1 Fill Rule](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#411-fill-rule)).
 
@@ -282,13 +282,13 @@ Otherwise if any of the vertices do not share same NormVectorGrop and same NormV
 ##### Figure 4-3: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same as the normal of the corresponding triangle. The displacements values described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different, with positive depth. The new displaced surfaces are connected through the common vertex in the mesh to close the new 3D shape. This requires two additional segments, as indicated in Green.
 ![Adjacent not connected](images/4.3_adjacent_jump.png)
 
-##### Figure 4-4: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same. The displacement values of each vertex belonging to two neighboring triangles are the same, with negative depth. The new displaced surfaces are connected continuosly.
+##### Figure 4-4: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same. The displacement values of each vertex belonging to two neighboring triangles are the same, with negative depth. The new displaced surfaces are connected continuosly. An analog case might be obtained by specifying a reversed displaement vector (for example on concave surfaces) and positive depths.
 ![Adjacent negative continuos](images/4.4_adjacent_neg_cont.png)
 
-##### Figure 4-5: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same. The displacements value described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different, with negative depth.  The new displaced surfaces are directly connected to close the new 3D shape using an added segment. The new displacement vector is indicated in Red, the section that needs to be connected is indicated in Green.
+##### Figure 4-5: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same. The displacements value described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different, with negative depth.  The new displaced surfaces are directly connected to close the new 3D shape using an added segment. The new displacement vector is indicated in Red, the section that needs to be connected is indicated in Green. An analog case might be obtained by specifying a reversed displaement vector (for example on concave surfaces) and positive depths.
 ![Adjacent negative connected](images/4.5_adjacent_neg_direct.png)
 
-##### Figure 4-6: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same as the normal of the corresponding triangle. The displacements values described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different, with negative depth. The new displaced surfaces are connected through the common vertex in the mesh to close the new 3D shape. This requires two additional segments, as indicated in Green. This produces a self-intersection that MUST be removed using the [Fill Rule in the Core Specification](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#411-fill-rule)
+##### Figure 4-6: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same as the normal of the corresponding triangle. The displacements values described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different, with negative depth. The new displaced surfaces are connected through the common vertex in the mesh to close the new 3D shape. This requires two additional segments, as indicated in Green. This produces a self-intersection that MUST be removed using the [Fill Rule in the Core Specification](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#411-fill-rule). An analog case might be obtained by specifying a reversed displaement vector (for example on concave surfaces) and positive depths.
 ![Adjacent negative not connected](images/4.6_adjacent_neg_jump.png)
 
 ## 4.3 Displacement Map and Properties
