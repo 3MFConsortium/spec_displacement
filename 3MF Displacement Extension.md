@@ -122,7 +122,7 @@ Element **\<displacement2d>**
 | Name   | Type   | Use   | Default   | Annotation |
 | --- | --- | --- | --- | --- |
 | id | **ST\_ResourceID** | required |   | ResourceID of this displacement resource. |
-| path | **ST\_UriReference** | required |   | path to the displacement texture. |
+| path | **ST\_UriReference** | required |   | Path to the displacement image file. |
 | contenttype | **ST\_ContentType** | required |   | Content type of the texture resource. PNG or JPEG allowed. |
 | channel | **ST\_ChannelName** | optional | G | Specifies which channel to reference in the displacement texture. Valid values are R, G, B, A. Ignored for monochromatic images. |
 | tilestyleu | **ST_TileStyle** |  | wrap | Specifies how tiling should occur in the u axis in order to fill the overall requested area. Valid values are wrap, mirror, clamp, none. |
@@ -131,6 +131,10 @@ Element **\<displacement2d>**
 | @anyAttribute | | | | |
 
 A displacement texture resource provides information about texture image data, found via the provided path reference, which MUST also be the target of a 3D Texture relationship from the 3D Model part. 
+
+**id** - Specifies a unique identifier for this displacement resource. 
+
+**path** - Specifies the path to the displacement image file.
 
 **contenttype** - The only supported content types are JPEG and PNG, as more specifically specified in the 3MF core spec under the [6.1. Thumbnail](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#61-thumbnail) section.
 
@@ -162,10 +166,16 @@ Element **\<disp2dgroup>**
 
 A \<disp2dgroup> element acts as a container for texture coordinate properties. The order of these elements forms an implicit 0-based index that is referenced by other elements, such as the \<object> and \<triangle> elements. It also specifies which image to use, via dispid. The referenced \<displacement2d> elements are described above in [2.1 Displacement2D](#21-displacement2d).
 
+**id** - Specifies a unique identifier for this displacement resource. 
+
+**dispid** - Selects the ID of the Displacement map used in this displacement group. 
+
+**nid** - Specifies the normalized vector group used in this dispalcement group. 
+
 **depth** - The depth attribute defines the displacement amplitude for the maximum texture value range.
 
 **offset** - The offset attribute defines the displacement offset to apply. The offset default value is 0.
-
+-
 The displacement value is computed by:
 
 	displacement value = (depth * displacement texture value) + offset
@@ -205,6 +215,8 @@ Element **\<normvectorgroup>**
 A \<normvectorgroup> element acts as a container for normalized vectors properties. The order of these elements forms an implicit 0-based index that is referenced by the \<disp2dcoords> element.
 
 To avoid integer overflows, a texture coordinate group MUST contain less than 2^31 disp2dcoords.
+
+**id** - Specifies a unique identifier for this displacement resource. 
 
 ### 2.3.1 NormVector
 Element **\<normvector>**
@@ -356,6 +368,7 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 		</xs:sequence>
 		<xs:attribute name="id" type="ST_ResourceID" use="required"/>
 		<xs:attribute name="dispid" type="ST_ResourceID" use="required"/>
+		<xs:attribute name="nid" type="ST_ResourceID" use="required"/>
 		<xs:attribute name="depth" type="ST_Number" use="required"/>
 		<xs:attribute name="offset" type="ST_Number" default="0"/>
 		<xs:anyAttribute namespace="##other" processContents="lax"/> 
@@ -381,7 +394,6 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 		<xs:attribute name="u" type="ST_Number" use="required"/>
 		<xs:attribute name="v" type="ST_Number" use="required"/>
 		<xs:attribute name="n" type="ST_ResourceIndex" use="required"/>
-		<xs:attribute name="nid" type="ST_ResourceID" use="required"/>
 		<xs:anyAttribute namespace="##other" processContents="lax"/> 
 	</xs:complexType>
 	
