@@ -492,16 +492,16 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
       <d:normvector nx="-0.704644" ny="0.704673" nz="-0.0831459"/>
       <d:normvector nx="0.704655" ny="0.704655" nz="-0.083201"/>
     </d:normvectorgroup>
-    <d:disp2dgroup id="18" dispid="10" depth="1.5">
-      <d:disp2dcoord u="0" v="0" nid="24" n="0"/>
-      <d:disp2dcoord u="1" v="0" nid="24" n="1"/>
-      <d:disp2dcoord u="0.50005" v="1" nid="24" n="2"/>
-      <d:disp2dcoord u="1" v="1" nid="24" n="3"/>
-      <d:disp2dcoord u="0" v="5.96046e-008" nid="24" n="1"/>
-      <d:disp2dcoord u="1" v="5.96046e-008" nid="24" n="0"/>
-      <d:disp2dcoord u="-5.96046e-008" v="0" nid="24" n="1"/>
-      <d:disp2dcoord u="0" v="1" nid="24" n="4"/>
-      <d:disp2dcoord u="1" v="0" nid="24" n="4"/>
+    <d:disp2dgroup id="18" dispid="10" nid="24" depth="1.5">
+      <d:disp2dcoord u="0" v="0" n="0"/>
+      <d:disp2dcoord u="1" v="0" n="1"/>
+      <d:disp2dcoord u="0.50005" v="1" n="2"/>
+      <d:disp2dcoord u="1" v="1" n="3"/>
+      <d:disp2dcoord u="0" v="5.96046e-008" n="1"/>
+      <d:disp2dcoord u="1" v="5.96046e-008" n="0"/>
+      <d:disp2dcoord u="-5.96046e-008" v="0" n="1"/>
+      <d:disp2dcoord u="0" v="1" n="4"/>
+      <d:disp2dcoord u="1" v="0" n="4"/>
     </d:disp2dgroup>
     <object id="9" name="Scene - DispMaps_13" thumbnail="/Thumbnails/Scene_DispMaps_13.png" type="model">
       <mesh>
