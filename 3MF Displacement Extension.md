@@ -13,7 +13,7 @@
 
 
 
-| **Version** | 0.6.1 |
+| **Version** | 0.7.0 |
 | --- | --- |
 | **Status** | Draft |
 
@@ -26,18 +26,18 @@
   * [Software Conformance](#software-conformance)
 - [Part I: 3MF Documents](#part-i-3mf-documents)
   * [Chapter 1. Overview of Additions](#chapter-1-overview-of-additions)
-  * [Chapter 2. Resources](#chapter-2-resources)
-    + [2.1 Displacement2D](#21-displacement2d)
-    + [2.2 Disp2DGroup](#22-disp2dgroup)
-      - [2.2.1 Disp2DCoords](#221-disp2dcoords)
-    + [2.3 NormVectorGroup](#23-normvectorgroup)
-      - [2.3.1 NormVector](#231-normvector)
-  * [Chapter 3. Mesh Triangles](#chapter-3-mesh-triangles)
-	+ [3.1 Triangle](#31-triangle)
-  * [Chapter 4. Usage rules](#chapter-4-usage-rules)
-	+ [4.1 Fill Rule](#41-fill-rule)
-	+ [4.2 Adjacent Triangles](#42-adjacent-triangles)
-	+ [4.3 Displacement Map and Properties](#43-displacement-map-and-properties)
+  * [Chapter 2. Displacement Maps](#chapter-2-displacement-maps)
+  * [Chapter 3. Resources](#chapter-3-resources)
+    + [3.1 Displacement2D](#31-displacement2d)
+    + [3.2 Disp2DGroup](#32-disp2dgroup)
+      - [3.2.1 NormVector](#321-normvector)
+      - [3.2.1 Disp2DCoords](#322-disp2dcoords)
+  * [Chapter 4. Object](#chapter-4-object)
+	+ [4.1 Triangle](#41-triangle)
+  * [Chapter 5. Usage rules](#chapter-5-usage-rules)
+	+ [5.1 Fill Rule](#51-fill-rule)
+	+ [5.2 Adjacent Triangles](#52-adjacent-triangles)
+	+ [5.3 Displacement Map and Properties](#53-displacement-map-and-properties)
 - [Part II. Appendices](#part-ii-appendices)
   * [Appendix A. Glossary](#appendix-a-glossary)
   * [Appendix B. 3MF XSD Schema](#appendix-b-3mf-xsd-schema)
@@ -81,24 +81,16 @@ See [the 3MF Core Specification software conformance](https://github.com/3MFCons
 
 ##### Figure 1-1: Encoding of an Initial sphere mesh (a), Encoding of a sphere mesh with a displacement map (b), Encoding of the retesselated sphere (c).
 
-| ![Sphere Mesh](images/overview_1.png) | ![Sphere mesh with greyscale displacement](images/overview_2.png) | ![Retesselated Sphere mesh](images/overview_3.png) |
+| ![Sphere Mesh](images/1_overview_1.png) | ![Sphere mesh with greyscale displacement](images/1_overview_2.png) | ![Retesselated Sphere mesh](images/1_overview_3.png) |
 | :---: | :---: | :---: |
 | Sphere mesh (27.500 triangles, 411kB). | Sphere mesh with greyscale displacement map (27.500 triangles, 1.2MB) | Retesselated Sphere mesh (660.000 triangles, 12.1MB)|
 
-The rationale of the displacement specification extension is to enhance mesh geometry by a displacement mapping.
-This is achieved displacing the 3D mesh geometry using a scalar map that describes the offset in the direction of the displacement vector.
-This allows a very memory effective and accurate description of complex geometry.
+The rationale of the displacement specification extension is to enhance mesh geometry by a displacement mapping. This is achieved displacing the 3D mesh geometry using a scalar map that describes the offset in the direction of the displacement vector. This allows a very memory effective and accurate description of complex geometry.
 
-This means that the displacement information of a triangle is given by
+This means that the displacement information of a triangle is given by:
 - UV coordinates for each corner.
 - A scalar 2D image for representing the "heightmap".
-- A displacement direction for each corner which can be linearly interpolated on the surface.
-
-##### Figure 2-1: Example of displacement mapping from a texture.
-
-| ![Triangle with displacement vectors and depth](images/displacement_triangle.png) | ![Texture referenced by triangle](images/displacement_scalar.png) |
-| :---: | :---: |
-| Triangle with interpolated and normalized displacement vectors | Texture referenced by triangle. The region referenced by the UV coordinates is highlighted. |
+- A displacement vector for each corner which can be interpolated on the surface.
 
 This document describes new elements, each of which is OPTIONAL for producers, but MUST be supported by consumers that specify support for this displacement extension of 3MF.
 
@@ -107,14 +99,176 @@ This document describes new elements, each of which is OPTIONAL for producers, b
 #####
 ![Overview of model XML structure of 3MF with displacement additions](images/xsd_overview1.png)
 
-##### Figure 2-3: Overview of model mesh XML structure of 3MF with displacement additions.
+##### Figure 2-3: Overview of model object XML structure of 3MF with displacement additions.
 
 #####
-![Overview of model mesh XML structure of 3MF with displacement additions](images/xsd_overview2.png)
+![Overview of model object XML structure of 3MF with displacement additions](images/xsd_overview2.png)
 
-# Chapter 2. Resources
+# Chapter 2. Displacement Maps
 
-## 2.1 Displacement2D
+Displacement maps allow the producer to specify the macrostructure and mesostructure of a model separately. The macrostructure corresponds to the general shape of the object, and it is represented as a triangle mesh. We will call this the *base mesh*. The mesostructure contains higher frequency detail, like bumps on the surface of the model, and it is specified using a *displacement texture*. Figure 2-1 shows an example of a simple side of a mesh (a quad), the texture used as a displacement map, and the resulting displaced mesh.
+
+##### Figure 2-1: Triangle of the base mesh in parametric form and its coverage of the parameter space. The displacement texture map occupies the square defined between coordinates (0, 0) and (1, 1). Black corresponds to a value of 0, while white does to a value of 1.
+
+![Simple displacement](images/2.1_simple_displacement.png)
+
+Let us denote a triangle *T* of the base mesh in parametric form $p(u, v)$, such that its three vertices $p_1, p_2, p_3$ have corresponding parametric coordinates $(u_1, v_1), (u_2, v_2), (u_3, v_3)$. Thus:
+
+$\begin{align}
+p_1 = p(u_1, v_1) \\
+p_2 = p(u_2, v_2) \\
+p_3 = p(u_3, v_3)
+\end{align}$
+
+Specifying the triangle in this manner connects the position of any 3D point on it to a position in the corresponding 2D parameter space. If the displacement texture is then associated to the square defined between coordinates $(0, 0)$ and $(1, 1)$ in parameter space, a map between every point $p(u, v)$ on *T* and a value $dm(u, v)$ of the displacement texture is established. Figure 2-2 shows a triangle in 3D space, the texture coordinates of its vertices, and how the triangle is mapped to the parameter space. We will say that the coordinates $(u_1, v_1), (u_2, v_2), (u_3, v_3)$ are the displacement map texture coordinates of the vertices $p_1, p_2, p_3$ of T. Here, we assume that the displacement map texture $dm(u, v)$ returns values between zero and one.
+
+##### Figure 2-2: Triangle of the base mesh in parametric form and its coverage of the parameter space. The displacement texture map occupies the square defined between coordinates (0, 0) and (1, 1). Black corresponds to a value of 0, while white does to a value of 1.
+
+![Triangle map](images/2.2_triangle_map.png)
+
+Denote as $n(u, v)$ the displacement vectors associated to each point of triangle +T*, and $f(u, v)$ as an associated scale factor. This factor will scale the effect of the displacement, so that its effect can be reduced at certain vertices. Then, the geometry $\tilde{p}$(u, v) of triangle *T* after displacement may be expressed as the sum of the base mesh and the displacement as:
+
+$\begin{align}
+\tilde{p}(u, v) = p(u, v) + dm(u, v) \cdot f(u, v) \cdot n(u, v)
+\end{align}$
+
+Figure 3 shows a triangle in the mesh is uv-mapped to a displacement texture:
+
+##### Figure 2-3: The triangle from Fig. 2-2 after applying the corresponding part of the displacement map. Both the scale factor and the values in the displacement map affect the length of the displacement.
+
+![Triangle map](images/2.3_displaced_triangle.png)
+
+Then, to let the displacement values $dm(u, v)$ move in a specific range, *height* and *offset* are introduced. Sampling the displacement texture map produces values in the range [0, 1]. These are scaled using the formula:
+
+$\begin{align}
+dm(u, v) = texture(u, v) \cdot height + offset
+\end{align}$
+
+where $texture(u, v)$ denotes the value returned by sampling the displacement texture map at parametric coordinates $(u, v)$. Notice that, as $dm(u, v)$ is used to scale the displacement vector $n(u, v)$, the final size of the displacement at each point depends on $texture(u, v)$ and *height*. Figure 2-4 shows the result of choosing different values for these two parameters. The offset parameter is particularly useful to change what value of the texture produces no displacement. The *height* value may take negative values to produce displacement in the direction opposite to the specified displacement vectors.
+
+##### Figure 2-4: Scaling a displacement map. Dark blue is the base mesh. Light blue, the displaced result.
+
+| ![image 1](images/2.4_scale_1.png) | ![image 2](images/2.4_scale_2.png) | ![image 3](images/2.4_scale_3.png) | ![image 4](images/2.4_scale_4.png) |
+| :---: | :---: | :---: | :---: |
+| Base squad | Offset = 0 and depth = 1 | Offset = −0.5 and depth = 1 | Offset = 0 and depth = 2 |
+
+Regarding the displacement vectors *n(u, v)*, we could use the normal of each triangle *T* for the displacement
+produced from *T*. Better control may be provided by assigning normalized displacement vectors $n_1, n_2, n_3$ at each
+of its vertices and interpolating them linearly. Figure 2-5 shows this effect.
+
+##### Figure 2-5: Being able to specify different displacement vectors per vertex enables more control.
+
+![normalized vector](images/2.5_norm_vectors.png)
+
+Assume we want to compute the displacement vector for a point P that has barycentric coordinates $α_1$, $α_2$, $α_3$ inside a triangle with vertices $p_1$, $p_2$ and $p_3$. Thus:
+
+$\begin{align}
+P = α_1p_1 + α_2p_2 + α_3p_3
+\end{align}$
+
+If the vertices have displacement texture coordinates ($u_1$, $v_1$), ($u_2$, $v_2$), ($u_3$, $v_3$), the texture coordinates of point *P* are:
+
+$\begin{align}
+(u, v) = (α_1u_1 + α_2u_2 + α_3u_3, α_1v_1 + α_2v_2 + α_3v_3)
+\end{align}$
+
+and given that the normalized displacement vectors associated to the triangle’s three vertices are $n_1$, $n_2$, $n_3$, the normalized displacement vector at *P* is:
+
+$\begin{align}
+n(u, v) = \cfrac{α_1n_1 + α_2n_2 + α_3n_3}{\|α_1n_1 + α_2n_2 + α_3n_3\|}
+\end{align}$
+
+The same is done for the scale factors. They are specified at the vertices as $f_1, f_2, f_3$, and interpolated
+inside a triangle using barycentric coordinates:
+
+$\begin{align}
+f(u, v) = α_1f_1 + α_2f_2 + α_3f_3
+\end{align}$
+
+We also need to define what happens for texture coordinates outside the domain $[0, 1]^2$. there are several methods to deal with this case: *wrap*, *mirror*, *clamp*, and *none*. Figures 1-8 and 1-9 show how they work.
+
+Assume we are applying a displacement texture of $W × H$ pixels, and want to determine the value at texture coordinates $(u, v)$. We first transform $(u, v)$ to image space (see Figure 2-6):
+
+$\begin{align}
+(u, v) \to (i_c, j_c) = \big((1 − v) \cdot H − 0.5, u \cdot W − 0.5\big)
+\end{align}$
+
+##### Figure 2-6: Texture coordinates need to be transformed to image space, so the corresponding texels may be accessed.
+
+![normalized vector](images/2.6_texture_coord.png)
+
+Then, if the filtering mode is *nearest*, the displacement value is $C\big(round(i_c), round(j_c)\big)$, where $C(\cdot, \cdot)$ is a function that retrieves the value from the tiled image, to be detailed below.
+
+If the filtering mode is *linear* instead, then let:
+
+$\begin{align}
+i_0 = ⌊i_c⌋; & i_1 = i_0 + 1 \\
+j_0 = ⌊j_c⌋; & j_1 = j_0 + 1
+\end{align}$
+
+The four closest pixels are $(i_0, j_0)$, $(i_0, j_1)$, $(i_1, j_0)$ and $(i_1, j_1)$, and the filtered displacement value can now be computed as 
+follows:
+
+$\begin{align}
+λ_i &= i_c − ⌊i_c⌋ \\
+λ_j &= j_c − ⌊j_c⌋ \\
+dm(u, v) &= \begin{split} 	& C(i_0, j_0)(1 − λ_i)(1 − λ_j) + \\
+           					& C(i_0, j_1)(1 − λ_i)λ_j + \\
+		   					& C(i_1, j_0)λ_i(1 − λ_j) + \\
+		   					& C(i_1, j_1)λ_iλ_j
+\end{split}
+\end{align}$
+
+The effect of the two filtering modes is presented in Figure 2-7.
+
+##### Figure 2-7: Effect of filter modes on the displacement.
+
+| ![image 1](images/2.7_filtering_mode_1.png) | ![image 2](images/2.7_filtering_mode_2.png) | ![image 3](images/2.7_filtering_mode_3.png) |
+| :---: | :---: | :---: |
+| Simple 3×3 displacement texture | Result with filter mode *nearest* | Result with filter mode *linear* |
+
+This integer coordinates $(i, j)$ may range over $[0, 1]^2$. To retrieve the actual value then we need to map them onto an equivalent pair $(i', j') \in \left\{0..H − 1\right\} × \left\{0..W − 1\right\}$ of the same value, which is done independently
+on each component, using the tiling option for the corresponding direction. If L denotes the length of the image in the direction under scrutiny (*H* for *i*, and *W* for *j*), then:
+
+$\begin{align}
+CLAMP(x,L) & = min \big(L − 1, max(x, 0) \big) \\
+WRAP(x,L) & = x - \lfloor \frac{x}{L} \rfloor \cdot L \\
+MIRROR(x,L) & = \begin{cases}
+x - \lfloor \frac{x}{L} \rfloor \cdot L & \quad \lfloor \frac{x}{L} \rfloor \equiv 0(mod 2) \\
+\big(\lfloor \frac{x}{L} \rfloor + 1\big) \cdot L − x − 1 & \quad otherwise
+\end{cases} \\
+NONE(x,L) & = x
+\end{align}$
+
+If $TILE_i$ denotes whichever of these three functions applies in direction *i*, then:
+
+$\begin{align}
+C(i, j) = \begin{cases}
+IMAGE[TILE_i\big[(i, H)\big]\big[TILE_j(j,W)\big] & \quad
+\begin{split}
+&(TILE_i \neq NONE \text{ or } 0 <= i < L) \text{ and} \\
+&(TILE_j \neq NONE \text{ or } 0 <= j < L)
+\end{split} \\
+0 & \quad otherwise
+\end{cases}
+\end{align}$
+
+where the result of applying $TILE_i$ is always an integer in $\left\{0..L − 1\right\}$, and they all reduce to the identity
+if their first argument is already in that range.
+
+##### Figure 2-8: The different tiling texture modes control how the displacement texture image is extended outside the square between $(0, 0)$ and $(1, 1)$.
+
+![tiling modes](images/2.8_tiling_modes.png)
+
+##### Figure 2-9: Results of applying the texture of Fig. 8a using different tiling texture modes to a quad base mesh with texture coordinates between $(-1, -1)$ and $(2, 2)$.
+
+| ![tiling wrap](images/2.9_tiling_wrap.png) | ![tiling mirror](images/2.9_tiling_mirror.png) | ![tiling clamp](images/2.9_tiling_clamp.png) | ![tiling none](images/2.9_tiling_none.png) |
+| :---: | :---: | :---: | :---: |
+| WRAP | MIRROR | CLAP | NONE |
+
+# Chapter 3. Resources
+
+## 3.1 Displacement2D
 Element **\<displacement2d>**
 
 ![Displacement2D XML structure](images/xsd_displacement.png)
@@ -150,7 +304,7 @@ The displacement texture values range are independent from the image coding rang
 
 **filter** - The producer MAY require the use of a specific filter type by specifying either “linear” for bilinear interpolation or “nearest” for nearest neighbor interpolation. The producer SHOULD use “auto” to indicate to the consumer to use the highest quality filter available. If the source texture is scaled with the model, the specified filter type MUST be applied to the scaling operation. The default value is “auto”.
 
-## 2.2 Disp2DGroup
+## 3.2 Disp2DGroup
 Element **\<disp2dgroup>**
 
 ![Disp2dGroup XML structure](images/xsd_disp2dgroup.png)
@@ -159,9 +313,8 @@ Element **\<disp2dgroup>**
 | --- | --- | --- | --- | --- |
 | id | **ST\_ResourceID** | required |   | ResourceID of this Disp2dGroup resource |
 | dispid | **ST\_ResourceID** | required |   | ID of the Displacement map used in this group |
-| nid | **ST\_ResourceID** | | | ID of the normalized vector group used in this group |
-| depth | **ST\_Number** | required |   | Scaling factor for the values in the displacement map |
-| offset | **ST\_Number** |  |  0 | Offset after scaling the values in the displacement map |
+| height | **ST\_Number** | required |   | The amplitude of the mapped values in the texture |
+| offset | **ST\_Number** |  |  0 | Offset to the displacement map amplitude |
 | @anyAttribute | | | | |
 
 A \<disp2dgroup> element acts as a container for texture coordinate properties. The order of these elements forms an implicit 0-based index that is referenced by other elements, such as the \<object> and \<triangle> elements. It also specifies which image to use, via dispid. The referenced \<displacement2d> elements are described above in [2.1 Displacement2D](#21-displacement2d).
@@ -170,23 +323,45 @@ A \<disp2dgroup> element acts as a container for texture coordinate properties. 
 
 **dispid** - Selects the ID of the Displacement map used in this displacement group. 
 
-**nid** - Specifies the normalized vector group used in this dispalcement group. 
+**height** - The height attribute defines the displacement amplitude in the model units for the maximum texture value range.
 
-**depth** - The depth attribute defines the displacement amplitude for the maximum texture value range.
+**offset** - The offset attribute defines the displacement offset in the model units. The offset default value is 0.
 
-**offset** - The offset attribute defines the displacement offset to apply. The offset default value is 0.
--
-The displacement value is computed by:
+The displacement map (dm), at barycentric coordinates u, v,is computed by:
 
-	displacement value = (depth * displacement texture value) + offset
+	dm(u,v) = texture(u,v) * height + offset
 
-where the displacement texture value is in the range [0, 1], and the displacement value is applied in the model unit resolution, as specified in the 3MF core specification ([3.4 Model](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#34-model)).
+where the texture value is in the range [0, 1], and the displacement map is applied in the model unit resolution, as specified in the 3MF core specification ([3.4 Model](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#34-model)).
 
-A positive displacement value specifies an embossing of the original mesh and a negative displacement value especifies a debossing of the original mesh.
+A positive displacement map specifies an embossing and a negative displacement map especifies a debossing of the original mesh.
 
 To avoid integer overflows, a texture coordinate group MUST contain less than 2^31 disp2dcoords.
 
-### 2.2.1 Disp2DCoords
+### 3.2.1 NormVector
+Element **\<normvector>**
+
+![NormVector XML structure](images/xsd_normvector.png)
+
+| Name   | Type   | Use   | Default   | Annotation |
+| --- | --- | --- | --- | --- |
+| x | **ST\_Number** | required |   | X-component of the normalized displacement vector. |
+| y | **ST\_Number** | required |   | Y-component of the normalized displacement vector. |
+| z | **ST\_Number** | required |   | Z-component of the normalized displacement vector. |
+| @anyAttribute | | | | |
+
+The \<normvector> element defines the direction where the displacement is applied. The \<normvector> element MUST be normalized by the producer so the module of the displacement vector is 1.0. Consumers SHOULD accept non-normalized vectors but normalize them before applying.
+
+**x, y, z** - The X, Y and Z componenents of the normalized vector group.
+
+The normalized vectors MUST point to the triangle's outer hemisphere of the triangle. The scalar product of each pair of normalized vectors in the triangle MUST NOT be 0.
+
+Normalized vectors MUST be linearly interpolated to spread the displacement map along a surface. All interpolated vectors MUST be normalized before being applied. All interpolated normal vector MUST point to the outer hemisphere of the triangle.
+
+The normalized displacement vector specifies the direction:
+
+	displacement vector = normalized vector * displacement map
+
+### 3.2.2 Disp2DCoords
 Element **\<disp2dcoords>**
 
 ![Disp2dCoords XML structure](images/xsd_disp2dcoords.png)
@@ -195,56 +370,40 @@ Element **\<disp2dcoords>**
 | --- | --- | --- | --- | --- |
 | u | **ST\_Number** | required |   | The u-coordinate within the texture, horizontally right from the origin in the lower left of the texture. |
 | v | **ST\_Number** | required |   | The v-coordinate within the texture, vertically up from the origin in the lower left of the texture.|
-| n | **ST\_ResourceIndex** | required |   | Index to the normalized displacement vector to apply to these coordinates |
+| n | **ST\_ResourceIndex** | required |   | Index to the normalized displacement vector to apply to these coordinates. |
+| f | **ST\_PositiveNumber** |  |  1 | Default displacement factor. |
 | @anyAttribute | | | | |
 
-Displacement coordinates map a vertex of a triangle to a position in image space (U, V coordinates). Displacement mapping allows high-resolution color bitmaps to be applied to any surface defining the offset in the range [0, 1] used to obtain the new geometry by the displacement of the surface triangle.
+The \<disp2dcoords> element maps a vertex of a triangle to a position in image space (U, V coordinates). Displacement mapping allows texture images to  produce a new geometry by the displacement of the surface triangle.
 
-The lower left corner of the texture is the u, v coordinate (0,0), and the upper right coordinate is (1,1). The UV values are not restricted to this range. When the UV coordinates exceed the [0,1] range, the tilestyleu and tilestylev MUST be applied according to the tiling specified in [2.1 Displacement2D](#21-displacement2d).
+**u, v** - The U, V coordinates within the texture image. The lower left corner of the texture is the u, v coordinate (0,0), and the upper right coordinate is (1,1). The UV values are not restricted to this range. When the UV coordinates exceed the [0,1] range, the tilestyleu and tilestylev MUST be applied according to the tiling specified in [3.1 Displacement2D](#31-displacement2d).
 
-## 2.3 NormVectorGroup
-Element **\<normvectorgroup>**
+**n** - The index to the normalized displacement vector, defined by the \<normvector> ellements in the enclosing group.
 
-![NormVectorGroup XML structure](images/xsd_normvectorgroup.png)
+**f** - The optional displacement factor applied to the texture(u,v) value, in order to modulate the displacement vector across a triangle.
+
+	p'(u, v) = p(u, v) + dm(u, v) · f(u, v) · n(u, v)
+
+>**Note:** the *f* attribute allow to soften the step at the end of a texture on the surface applied.
+
+# Chapter 4. Object
+
+The 3MF core specification ([Chapter 3. Object](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#chapter-4-object-resources)) is enhanced with new attributes in the \<object> and \<triangle> elements to specify optional displacement maps to triangles of the mesh. 
+
+Element **\<object>**
+
+![Object](images/xsd_object.png)
 
 | Name   | Type   | Use   | Default   | Annotation |
 | --- | --- | --- | --- | --- |
-| id | **ST\_ResourceID** | required |   | ResourceID of this NormVectorGroup resource |
+| did | **ST\_ResourceID** | | | Default displacement group id. |
 | @anyAttribute | | | | |
 
-A \<normvectorgroup> element acts as a container for normalized vectors properties. The order of these elements forms an implicit 0-based index that is referenced by the \<disp2dcoords> element.
+The \<object> element is enhanced with a new attribute "did" to specify a default displacement group in the triangle mesh.
 
-To avoid integer overflows, a texture coordinate group MUST contain less than 2^31 disp2dcoords.
+**did** - Specifies the default desplacement map ID for the triangles in the mesh. This ID is ignored is no displacement maps is selected in any triangle.
 
-**id** - Specifies a unique identifier for this displacement resource. 
-
-### 2.3.1 NormVector
-Element **\<normvector>**
-
-![NormVector XML structure](images/xsd_normvector.png)
-
-| Name   | Type   | Use   | Default   | Annotation |
-| --- | --- | --- | --- | --- |
-| nx | **ST\_Number** | required |   | X-component of the normalized displacement vector. |
-| ny | **ST\_Number** | required |   | Y-component of the normalized displacement vector. |
-| nz | **ST\_Number** | required |   | Z-component of the normalized displacement vector. |
-| @anyAttribute | | | | |
-
-The normalized vector defines the direction where the displacement is applied. The \<normvector> element MUST be normalized by the producer so the module of the displacement vector is 1.0. Consumers SHOULD accept non-normalized vectors but normalize them before applying.
-
-The normalized vectors MUST point to the triangle's outer hemisphere where the displacement is applied.
-
-Normalized vectors MUST be linearly interpolated to spread the displacement map along a surface. All interpolated vectors MUST be normalized before being applied. All interpolated normal vector MUST point to the outer hemisphere of the triangle.
-
-The normalized displacement vector specifies the direction:
-
-	displacement vector = normalized vector * displacement value,
-
-# Chapter 3. Mesh triangles
-
-The 3MF core specification ([4.1.4.1 Triangle](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#4141-triangle)) represents a single face of the mesh, specifying the triangle vertices and the optional properties for each vertex. This specification extends the mesh triangle definition to specify the displacement map for the mesh triangles.
-
-## 3.1 Triangle
+## 4.1 Triangle
 Element **\<triangle>**
 
 ![Triangle](images/xsd_triangle.png)
@@ -254,22 +413,26 @@ Element **\<triangle>**
 | d1 | **ST\_ResourceIndex** | | | Displacement map index for the first vertex of the triangle. |
 | d2 | **ST\_ResourceIndex** | | | Displacement map index for the second vertex of the triangle. |
 | d3 | **ST\_ResourceIndex** | | | Displacement map index for the third vertex of the triangle. |
-| did | **ST\_ResourceID** | | | Displacement map id for the triangle. |
+| did | **ST\_ResourceID** | | | Displacement map id for the triangle. When specified. |
 | @anyAttribute | | | | |
 
 In addition to the \<triangle> element specified in the 3MF core specification ([4.1.4.1 Triangle](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#4141-triangle)), the \<triangle> element is extended with the optional displacement map for each vertex.
 
-The displacement map applied to each vertex (d1, d2, d3) allow displacement to be defined across the triangle by mapping to the displacement texture and the normalized displacement vector, where interpolation of the displacement normalized vector is defined as the linear convex combination and then normalized.
+**did** - Specifies the desplacement group ID for the triangles in the mesh, overriding the default displacement map ID in the enclosing object. The "did" is ignored is no displacement maps indices are selected in triangle.
 
-The displacement group is specified by the did attribute. Since this is applied to the whole triangle, it implicitly forces the three displacement map indices to be from the same group. If d1 is specified then the did attribute MUST be specified. If d2 or d3 is unspecified then d1 is used for the entire triangle. If d1 is unspecified then no displacement map is applied to the triangle.
+**d1, d2, d3** - Specify the indices to the displacement maps in the selected displacement group for the vertices "v1", "v2" and "v3", respectively.
+
+The displacement map applied to each vertex (d1, d2, d3) allow displacement to be defined across the triangle by mapping to the displacement texture and the displacement vector.
+
+The displacement group is specified by the did attribute. Since this is applied to the whole triangle, it implicitly forces the three displacement map indices to be from the same group. If "d1" is specified then the did attribute MUST be specified, either in the triangle or in the enclosing object. If "d2" or "d3" are unspecified then "d1" is used for the entire triangle. If "d1" is unspecified then no displacement map is applied to the triangle, and the "did" is ignored.
 
 As the displacement maps applied to a mesh defines a new shape, any transform to the object MUST be applied to that new shape.
 
-# Chapter 4. Usage rules
+# Chapter 5. Usage rules
 
 There are a few rules for interpreting the displacement maps for obtaining the final shape: fill rule, adjacent triangles and triangle properties.
 
-## 4.1 Fill Rule
+## 5.1 Fill Rule
 
 When applying the displacement map to a mesh, the resultant shape might be embossed, or debossed. This shape change might result in shape self-intersections or new holes when two surfaces have an overlapping innner extrusion.
 
@@ -277,7 +440,7 @@ The final shape MUST be resolved by applying the Fill Rule as defined in the 3MF
 
 For efficient displacment maps the producer SHOULD not generate self-intersecting displaced shapes, since this MAY cause overhead in the consumer.
 
-## 4.2 Adjacent Triangles
+## 5.2 Adjacent Triangles
 
 When specifying the displacement on two adjacent triangles there MIGHT either be continuity or discontinuity in the join.
 
@@ -285,25 +448,25 @@ If the common vertices of two connected triangles, for each vertex, have a displ
 
 Otherwise if any of the vertices do not share same NormVectorGrop and same NormVector index the consumer MUST preserve continuity by connecting each displaced surface through the triangle's shared edge.
 
-##### Figure 4-1: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same. The displacement values of each vertex belonging to two neighboring triangles are the same, with positive depth. The new displaced surfaces are connected continuosly.
+##### Figure 5-1: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same. The displacement values of each vertex belonging to two neighboring triangles are the same, with positive height. The new displaced surfaces are connected continuosly.
 ![Adjacent continuos](images/4.1_adjacent_cont.png)
 
-##### Figure 4-2: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same. The displacements value described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different, with positive depth. The new displaced surfaces are directly connected at that vertex to close the new 3D shape using an added segment. The new displacement vector is indicated in Red, the section that needs to be connected is indicated in Green.
+##### Figure 5-2: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same. The displacements value described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different, with positive height. The new displaced surfaces are directly connected at that vertex to close the new 3D shape using an added segment. The new displacement vector is indicated in Red, the section that needs to be connected is indicated in Green.
 ![Adjacent connected](images/4.2_adjacent_direct.png)
 
-##### Figure 4-3: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same as the normal of the corresponding triangle. The displacements values described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different, with positive depth. The new displaced surfaces are connected through the common vertex in the mesh to close the new 3D shape. This requires two additional segments, as indicated in Green.
+##### Figure 5-3: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same as the normal of the corresponding triangle. The displacements values described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different, with positive height. The new displaced surfaces are connected through the common vertex in the mesh to close the new 3D shape. This requires two additional segments, as indicated in Green.
 ![Adjacent not connected](images/4.3_adjacent_jump.png)
 
-##### Figure 4-4: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same. The displacement values of each vertex belonging to two neighboring triangles are the same, with negative depth. The new displaced surfaces are connected continuosly. An analog case might be obtained by specifying a reversed displaement vector (for example on concave surfaces) and positive depths.
+##### Figure 5-4: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same. The displacement values of each vertex belonging to two neighboring triangles are the same, with negative height. The new displaced surfaces are connected continuosly. An analog case might be obtained by specifying a reversed displaement vector (for example on concave surfaces) and positive heights.
 ![Adjacent negative continuos](images/4.4_adjacent_neg_cont.png)
 
-##### Figure 4-5: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same. The displacements value described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different, with negative depth.  The new displaced surfaces are directly connected to close the new 3D shape using an added segment. The new displacement vector is indicated in Red, the section that needs to be connected is indicated in Green. An analog case might be obtained by specifying a reversed displaement vector (for example on concave surfaces) and positive depths.
+##### Figure 5-5: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same. The displacements value described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different, with negative height.  The new displaced surfaces are directly connected to close the new 3D shape using an added segment. The new displacement vector is indicated in Red, the section that needs to be connected is indicated in Green. An analog case might be obtained by specifying a reversed displaement vector (for example on concave surfaces) and positive heights.
 ![Adjacent negative connected](images/4.5_adjacent_neg_direct.png)
 
-##### Figure 4-6: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same as the normal of the corresponding triangle. The displacements values described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different, with negative depth. The new displaced surfaces are connected through the common vertex in the mesh to close the new 3D shape. This requires two additional segments, as indicated in Green. This produces a self-intersection that MUST be removed using the [Fill Rule in the Core Specification](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#411-fill-rule). An analog case might be obtained by specifying a reversed displaement vector (for example on concave surfaces) and positive depths.
+##### Figure 5-6: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same as the normal of the corresponding triangle. The displacements values described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different, with negative height. The new displaced surfaces are connected through the common vertex in the mesh to close the new 3D shape. This requires two additional segments, as indicated in Green. This produces a self-intersection that MUST be removed using the [Fill Rule in the Core Specification](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#411-fill-rule). An analog case might be obtained by specifying a reversed displaement vector (for example on concave surfaces) and positive heights.
 ![Adjacent negative not connected](images/4.6_adjacent_neg_jump.png)
 
-## 4.3 Displacement Map and Properties
+## 5.3 Displacement Map and Properties
 
 The displacement map MIGHT be combined with another property, for example color, color textures, multiproperties, as defined in the [3MF Materials and Properties Extension](https://github.com/3MFConsortium/spec_materials/blob/master/3MF%20Materials%20Extension.md). When combined, the properties are first applied to the triangle and then the triangle with the properties MUST be displaced by the displacement map.
 
@@ -341,7 +504,6 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 		<xs:sequence>
 			<xs:choice minOccurs="0" maxOccurs="2147483647">
 				<xs:element ref="displacement2d" minOccurs="0" maxOccurs="2147483647"/>
-				<xs:element ref="normvectorgroup" minOccurs="0" maxOccurs="2147483647"/>
 				<xs:element ref="disp2dgroup" minOccurs="0" maxOccurs="2147483647"/>
 				<xs:any namespace="##other" processContents="lax" minOccurs="0"
 					maxOccurs="2147483647"/>
@@ -363,30 +525,21 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 	
 	<xs:complexType name="CT_Disp2DGroup">
 		<xs:sequence>
+			<xs:element ref="normvector" minOccurs="1" maxOccurs="2147483647"/>
 			<xs:element ref="disp2dcoord" minOccurs="1" maxOccurs="2147483647"/>
 			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="2147483647"/>
 		</xs:sequence>
 		<xs:attribute name="id" type="ST_ResourceID" use="required"/>
 		<xs:attribute name="dispid" type="ST_ResourceID" use="required"/>
-		<xs:attribute name="nid" type="ST_ResourceID" use="required"/>
-		<xs:attribute name="depth" type="ST_Number" use="required"/>
+		<xs:attribute name="height" type="ST_Number" use="required"/>
 		<xs:attribute name="offset" type="ST_Number" default="0"/>
 		<xs:anyAttribute namespace="##other" processContents="lax"/> 
 	</xs:complexType>
 	
-	<xs:complexType name="CT_NormalizedVectorGroup">
-		<xs:sequence>
-			<xs:element ref="normvector" minOccurs="1" maxOccurs="2147483647"/>
-			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="2147483647"/>
-		</xs:sequence>
-		<xs:attribute name="id" type="ST_ResourceID"  use="required"/>
-		<xs:anyAttribute namespace="##other" processContents="lax"/> 
-	</xs:complexType>
-	
 	<xs:complexType name="CT_NormalizedVector">
-		<xs:attribute name="nx" type="ST_Number" use="required"/>
-		<xs:attribute name="ny" type="ST_Number" use="required"/>
-		<xs:attribute name="nz" type="ST_Number" use="required"/>
+		<xs:attribute name="x" type="ST_Number" use="required"/>
+		<xs:attribute name="y" type="ST_Number" use="required"/>
+		<xs:attribute name="z" type="ST_Number" use="required"/>
 		<xs:anyAttribute namespace="##other" processContents="lax"/> 
 	</xs:complexType>
 	
@@ -394,9 +547,15 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 		<xs:attribute name="u" type="ST_Number" use="required"/>
 		<xs:attribute name="v" type="ST_Number" use="required"/>
 		<xs:attribute name="n" type="ST_ResourceIndex" use="required"/>
+		<xs:attribute name="f" type="ST_PositiveNumber" default="1"/>
 		<xs:anyAttribute namespace="##other" processContents="lax"/> 
 	</xs:complexType>
 	
+	<xs:complexType name="CT_Object">
+		<xs:attribute name="did" type="ST_ResourceID"/>
+		<xs:anyAttribute namespace="##other" processContents="lax"/>
+	</xs:complexType>
+
 	<xs:complexType name="CT_Triangle">
 		<xs:attribute name="d1" type="ST_ResourceIndex"/>
 		<xs:attribute name="d2" type="ST_ResourceIndex"/>
@@ -446,6 +605,12 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 			<xs:pattern value="((\-|\+)?(([0-9]+(\.[0-9]+)?)|(\.[0-9]+))((e|E)(\-|\+)?[0-9]+)?)"/> 
 		</xs:restriction> 
 	</xs:simpleType> 
+	<xs:simpleType name="ST_PositiveNumber">
+		<xs:restriction base="xs:double">
+			<xs:whiteSpace value="collapse"/>
+			<xs:pattern value="((\+)?(([0-9]+(\.[0-9]+)?)|(\.[0-9]+))((e|E)(\-|\+)?[0-9]+)?)"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="ST_ResourceID">
 		<xs:restriction base="xs:positiveInteger">
 			<xs:maxExclusive value="2147483648"/>
@@ -461,10 +626,10 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 	<!-- Elements -->
 	<xs:element name="resources" type="CT_Resources"/>
 	<xs:element name="displacement2d" type="CT_Displacement2D"/>
-	<xs:element name="normvectorgroup" type="CT_NormalizedVectorGroup"/>
 	<xs:element name="normvector" type="CT_NormalizedVector"/>
 	<xs:element name="disp2dgroup" type="CT_Disp2DGroup"/>	
 	<xs:element name="disp2dcoord" type="CT_Disp2DCoord"/>
+	<xs:element name="object" type="CT_Object"/>
 	<xs:element name="triangle" type="CT_Triangle"/>
 </xs:schema> 
 ```
@@ -485,14 +650,12 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
   unit="millimeter" xml:lang="en-US">
   <resources>
     <d:displacement2d id="10" path="/3D/Textures/label_mono.png" contenttype="image/png"/>
-    <d:normvectorgroup id="24">
-      <d:normvector nx="-0.704662" ny="-0.704662" nz="-0.0830916"/>
-      <d:normvector nx="0.704672" ny="-0.704644" nz="-0.0831468"/>
-      <d:normvector nx="2.02911e-5" ny="2.00578e-5" nz="1"/>
-      <d:normvector nx="-0.704644" ny="0.704673" nz="-0.0831459"/>
-      <d:normvector nx="0.704655" ny="0.704655" nz="-0.083201"/>
-    </d:normvectorgroup>
-    <d:disp2dgroup id="18" dispid="10" nid="24" depth="1.5">
+    <d:disp2dgroup id="18" dispid="10" height="1.5">
+      <d:normvector x="-0.704662" y="-0.704662" z="-0.0830916"/>
+      <d:normvector x="0.704672" y="-0.704644" z="-0.0831468"/>
+      <d:normvector x="2.02911e-5" y="2.00578e-5" z="1"/>
+      <d:normvector x="-0.704644" y="0.704673" z="-0.0831459"/>
+      <d:normvector x="0.704655" y="0.704655" z="-0.083201"/>
       <d:disp2dcoord u="0" v="0" n="0"/>
       <d:disp2dcoord u="1" v="0" n="1"/>
       <d:disp2dcoord u="0.50005" v="1" n="2"/>
@@ -503,7 +666,7 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
       <d:disp2dcoord u="0" v="1" n="4"/>
       <d:disp2dcoord u="1" v="0" n="4"/>
     </d:disp2dgroup>
-    <object id="9" name="Scene - DispMaps_13" thumbnail="/Thumbnails/Scene_DispMaps_13.png" type="model">
+    <object id="9" d:did="18" name="Scene - DispMaps_13" thumbnail="/Thumbnails/Scene_DispMaps_13.png" type="model">
       <mesh>
         <vertices>
           <vertex x="152.345" y="84.2476" z="16.92"/>
@@ -513,12 +676,12 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
           <vertex x="192.345" y="124.248" z="16.92"/>
         </vertices>
         <triangles>
-          <triangle v1="0" v2="1" v3="2" d:did="18" d:d1="0" d:d2="1" d:d3="2"/>
-          <triangle v1="3" v2="1" v3="0" d:did="18" d:d1="3" d:d2="4" d:d3="5"/>
+          <triangle v1="0" v2="1" v3="2" d:d1="0" d:d2="1" d:d3="2"/>
+          <triangle v1="3" v2="1" v3="0" d:d1="3" d:d2="4" d:d3="5"/>
           <triangle v1="0" v2="2" v3="3"/>
-          <triangle v1="1" v2="4" v3="2" d:did="18" d:d1="6" d:d2="8" d:d3="2"/>
+          <triangle v1="1" v2="4" v3="2" d:d1="6" d:d2="8" d:d3="2"/>
           <triangle v1="4" v2="3" v3="2"/>
-          <triangle v1="4" v2="1" v3="3" d:did="18" d:d1="7" d:d2="4" d:d3="3"/>
+          <triangle v1="4" v2="1" v3="3" d:d1="7" d:d2="4" d:d3="3"/>
         </triangles>
       </mesh>
     </object>
