@@ -211,30 +211,11 @@ The effect of the two filtering modes is presented in Figure 2-7.
 This integer coordinates $(i, j)$ may range over $[0, 1]^2$. To retrieve the actual value then we need to map them onto an equivalent pair $(i', j') \in (0..H − 1) × (0..W − 1)$ of the same value, which is done independently
 on each component, using the tiling option for the corresponding direction. If L denotes the length of the image in the direction under scrutiny (*H* for *i*, and *W* for *j*), then:
 
-$CLAMP(x,L) = min \big(L − 1, max(x, 0) \big)$
-
-$WRAP(x,L) = x - \lfloor \frac{x}{L} \rfloor \cdot L$
-
-$MIRROR(x,L) = \begin{cases}
-x - \lfloor \frac{x}{L} \rfloor \cdot L & \quad \lfloor \frac{x}{L} \rfloor \equiv 0(mod 2) \\
-\big(\lfloor \frac{x}{L} \rfloor + 1\big) \cdot L − x − 1 & \quad otherwise
-\end{cases}$
-
-$NONE(x,L) = x$
-
+![formulae tiling modes](images/2_formula_1.png)
 
 If $TILE_i$ denotes whichever of these three functions applies in direction *i*, then:
 
-$\begin{align}
-C(i, j) = \begin{cases}
-IMAGE[TILE_i\big[(i, H)\big]\big[TILE_j(j,W)\big] & \quad
-\begin{split}
-&(TILE_i \neq NONE \text{ or } 0 <= i < L) \text{ and} \\
-&(TILE_j \neq NONE \text{ or } 0 <= j < L)
-\end{split} \\
-0 & \quad otherwise
-\end{cases}
-\end{align}$
+![formulae tiling C](images/2_formula_2.png)
 
 where the result of applying $TILE_i$ is always an integer in $\left\{0..L − 1\right\}$, and they all reduce to the identity
 if their first argument is already in that range.
