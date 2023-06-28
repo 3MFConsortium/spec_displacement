@@ -208,7 +208,7 @@ The effect of the two filtering modes is presented in Figure 2-7.
 | :---: | :---: | :---: |
 | Simple 3×3 displacement texture | Result with filter mode *nearest* | Result with filter mode *linear* |
 
-This integer coordinates $(i, j)$ may range over $[0, 1]^2$. To retrieve the actual value then we need to map them onto an equivalent pair $(i', j') \in \left\{0..H − 1\right\} × \left\{0..W − 1\right\}$ of the same value, which is done independently
+This integer coordinates $(i, j)$ may range over $[0, 1]^2$. To retrieve the actual value then we need to map them onto an equivalent pair $(i', j') \in (0..H − 1) × (0..W − 1)$ of the same value, which is done independently
 on each component, using the tiling option for the corresponding direction. If L denotes the length of the image in the direction under scrutiny (*H* for *i*, and *W* for *j*), then:
 
 $CLAMP(x,L) = min \big(L − 1, max(x, 0) \big)$
