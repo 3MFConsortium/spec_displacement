@@ -126,7 +126,7 @@ Specifying the triangle in this manner connects the position of any 3D point on 
 
 ![Triangle map](images/2.2_triangle_map.png)
 
-Denote as $n(u, v)$ the displacement vectors associated to each point of triangle +T*, and $f(u, v)$ as an associated scale factor. This factor will scale the effect of the displacement, so that its effect can be reduced at certain vertices. Then, the geometry $\tilde{p}$(u, v) of triangle *T* after displacement may be expressed as the sum of the base mesh and the displacement as:
+Denote as $n(u, v)$ the displacement vectors associated to each point of triangle *T*, and $f(u, v)$ as an associated scale factor. This factor will scale the effect of the displacement, so that its effect can be reduced at certain vertices. Then, the geometry $\tilde{p}$(u, v) of triangle *T* after displacement may be expressed as the sum of the base mesh and the displacement as:
 
 $\tilde{p}(u, v) = p(u, v) + dm(u, v) \cdot f(u, v) \cdot n(u, v)$
 
@@ -146,7 +146,7 @@ where $texture(u, v)$ denotes the value returned by sampling the displacement te
 
 | ![image 1](images/2.4_scale_1.png) | ![image 2](images/2.4_scale_2.png) | ![image 3](images/2.4_scale_3.png) | ![image 4](images/2.4_scale_4.png) |
 | :---: | :---: | :---: | :---: |
-| Base squad | Offset = 0 and depth = 1 | Offset = −0.5 and depth = 1 | Offset = 0 and depth = 2 |
+| Base squad | Offset = 0 and height = 1 | Offset = −0.5 and height = 1 | Offset = 0 and height = 2 |
 
 Regarding the displacement vectors *n(u, v)*, we could use the normal of each triangle *T* for the displacement
 produced from *T*. Better control may be provided by assigning normalized displacement vectors $n_1, n_2, n_3$ at each
@@ -240,7 +240,7 @@ Element **\<displacement2d>**
 | id | **ST\_ResourceID** | required |   | ResourceID of this displacement resource. |
 | path | **ST\_UriReference** | required |   | Path to the displacement image file. |
 | contenttype | **ST\_ContentType** | required |   | Content type of the texture resource. PNG or JPEG allowed. |
-| channel | **ST\_ChannelName** | optional | G | Specifies which channel to reference in the displacement texture. Valid values are R, G, B, A. Ignored for monochromatic images. |
+| channel | **ST\_ChannelName** | optional | G | Specifies which channel to reference in the displacement texture. Valid values are R, G, B. Ignored for monochromatic images. |
 | tilestyleu | **ST_TileStyle** |  | wrap | Specifies how tiling should occur in the u axis in order to fill the overall requested area. Valid values are wrap, mirror, clamp, none. |
 | tilestylev | **ST_TileStyle** |  | wrap | Specifies how tiling should occur in the v axis in order to fill the overall requested area. Valid values are wrap, mirror, clamp, none. |
 | filter | **ST_Filter** |  | auto | Specifies the texture filter to apply when scaling the source texture.  Allowed values are “auto”, “linear”, “nearest”. |
@@ -254,11 +254,7 @@ A displacement texture resource provides information about texture image data, f
 
 **contenttype** - The only supported content types are JPEG and PNG, as more specifically specified in the 3MF core spec under the [6.1. Thumbnail](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#61-thumbnail) section.
 
-**channel** - The channel attribute selects which of the R, G, B, or A channels defines the displacement texture. 
-
-If the specification says that a certain value is sampled from the texture’s R channel, but the referenced texture is only monochromatic, the grayscale channel MUST be used. Similarly, color values sampled from a monochromatic texture MUST be interpreted as if all R, G, B color channels shared the same grayscale value.
-
-If the channel attribute is not specified, it defauls to the G-green channel for RGB images, or to the grayscale channel for monochromatic images.
+**channel** - The channel attribute selects which of the R, G or B channels defines the displacement texture. This *channel* attribute MUST be ignored for monochromatic images.
 
 The displacement texture values range are independent from the image coding range, either 8-bit or 16-bit, and normalized to [0, 1] range. The normalized displacement values are obtained by dividing each channel by 2<sup>n</sup>-1, where n is the number of bits per channel. For example, in an 8-bit image the pixel values MUST be divided by 255.
 
@@ -313,15 +309,19 @@ Element **\<normvector>**
 
 The \<normvector> element defines the direction where the displacement is applied. The \<normvector> element MUST be normalized by the producer so the module of the displacement vector is 1.0. Consumers SHOULD accept non-normalized vectors but normalize them before applying.
 
-**x, y, z** - The X, Y and Z componenents of the normalized vector group.
+**x, y, z** - The X, Y and Z components of the normalized vector group.
 
-The normalized vectors MUST point to the triangle's outer hemisphere of the triangle. The scalar product of each pair of normalized vectors in the triangle MUST NOT be 0.
+The normalized vectors MUST point to the triangle's outer hemisphere of the triangle. The scalar product of a normalized displacement vector to the triangle normal MUST be greater than 0.
 
-Normalized vectors MUST be linearly interpolated to spread the displacement map along a surface. All interpolated vectors MUST be normalized before being applied. All interpolated normal vector MUST point to the outer hemisphere of the triangle.
+Normalized displacement vectors MUST be linearly interpolated to spread the displacement map along a surface. All interpolated vectors MUST be normalized before being applied.
 
-The normalized displacement vector specifies the direction:
+The displacement vector specifies the direction:
 
-	displacement vector = normalized vector * displacement map
+	displacement vector = dm(u,v) * f(u,v) * n(u,v)
+
+Which is:
+
+	displacement vector = displacement map * factor * normalized vector
 
 ### 3.2.2 Disp2DCoords
 Element **\<disp2dcoords>**
@@ -330,10 +330,10 @@ Element **\<disp2dcoords>**
 
 | Name   | Type   | Use   | Default   | Annotation |
 | --- | --- | --- | --- | --- |
-| u | **ST\_Number** | required |   | The u-coordinate within the texture, horizontally right from the origin in the lower left of the texture. |
-| v | **ST\_Number** | required |   | The v-coordinate within the texture, vertically up from the origin in the lower left of the texture.|
+| u | **ST\_Number** | required |   | The u-coordinate within the texture, horizontally right from the left of the texture. |
+| v | **ST\_Number** | required |   | The v-coordinate within the texture, vertically up from the bottom of the texture.|
 | n | **ST\_ResourceIndex** | required |   | Index to the normalized displacement vector to apply to these coordinates. |
-| f | **ST\_PositiveNumber** |  |  1 | Default displacement factor. |
+| f | **ST\_PositiveNumber** |  |  1 | Optional displacement factor. |
 | @anyAttribute | | | | |
 
 The \<disp2dcoords> element maps a vertex of a triangle to a position in image space (U, V coordinates). Displacement mapping allows texture images to  produce a new geometry by the displacement of the surface triangle.
@@ -346,7 +346,7 @@ The \<disp2dcoords> element maps a vertex of a triangle to a position in image s
 
 	p'(u, v) = p(u, v) + dm(u, v) · f(u, v) · n(u, v)
 
->**Note:** the *f* attribute allow to soften the step at the end of a texture on the surface applied.
+>**Note:** the *f* attribute allow to soften the displacement at the boundaries of the displaced surface.
 
 # Chapter 4. Object
 
@@ -358,10 +358,10 @@ Element **\<object>**
 
 | Name   | Type   | Use   | Default   | Annotation |
 | --- | --- | --- | --- | --- |
-| did | **ST\_ResourceID** | | | Default displacement group id. |
+| did | **ST\_ResourceID** | | | Optional default displacement group id. |
 | @anyAttribute | | | | |
 
-The \<object> element is enhanced with a new attribute "did" to specify a default displacement group in the triangle mesh.
+The \<object> element is enhanced with a new attribute "did" to specify an optional default displacement group in the triangle mesh.
 
 **did** - Specifies the default desplacement map ID for the triangles in the mesh. This ID is ignored is no displacement maps is selected in any triangle.
 
@@ -380,7 +380,7 @@ Element **\<triangle>**
 
 In addition to the \<triangle> element specified in the 3MF core specification ([4.1.4.1 Triangle](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#4141-triangle)), the \<triangle> element is extended with the optional displacement map for each vertex.
 
-**did** - Specifies the desplacement group ID for the triangles in the mesh, overriding the default displacement map ID in the enclosing object. The "did" is ignored is no displacement maps indices are selected in triangle.
+**did** - Specifies the desplacement group ID for the triangles in the mesh, overriding the default displacement map ID in the enclosing object, whether specified. The "did" is ignored is no displacement maps indices are selected in triangle. The "did" MUST be specified if "d1" is specified and no "did" specified at object level.
 
 **d1, d2, d3** - Specify the indices to the displacement maps in the selected displacement group for the vertices "v1", "v2" and "v3", respectively.
 
@@ -396,37 +396,45 @@ There are a few rules for interpreting the displacement maps for obtaining the f
 
 ## 5.1 Fill Rule
 
-When applying the displacement map to a mesh, the resultant shape might be embossed, or debossed. This shape change might result in shape self-intersections or new holes when two surfaces have an overlapping innner extrusion.
+When applying the displacement map to a mesh, the resultant shape might be embossed, or debossed. This shape change might result in shape self-intersections or holes.
 
-The final shape MUST be resolved by applying the Fill Rule as defined in the 3MF core specification ([4.1.1 Fill Rule](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#411-fill-rule)).
+The final shape MUST be resolved by applying the *Fill Rule* as defined in the 3MF core specification ([4.1.1 Fill Rule](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#411-fill-rule)).
 
 For efficient displacment maps the producer SHOULD not generate self-intersecting displaced shapes, since this MAY cause overhead in the consumer.
 
 ## 5.2 Adjacent Triangles
 
-When specifying the displacement on two adjacent triangles there MIGHT either be continuity or discontinuity in the join.
+Applying its displacement to each of the triangles on a mesh only works if the connection between adjacent triangles is maintained. Otherwise, the same vertex on two different triangles may be displaced to a different point in space. This may happen in two different cases (illustrated in Figure 10):
 
-If the common vertices of two connected triangles, for each vertex, have a displacement map sharing the same NormVectorGroup and same NormVector entry, the consumer MUST preserve continuity, even if they have different UV mapping or Displacement2D textures. The continuity is preserved by connecting the displaced surfaces of both triangles.
+1. If a vertex is used in two different triangles with either different displacement texture coordinates or displacement textures, and this results in two different displacement values, even though the displacement vectors used are the same. 
 
-Otherwise if any of the vertices do not share same NormVectorGrop and same NormVector index the consumer MUST preserve continuity by connecting each displaced surface through the triangle's shared edge.
+2. If a vertex is used in two different triangles with different displacement vectors.
 
-##### Figure 5-1: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same. The displacement values of each vertex belonging to two neighboring triangles are the same, with positive height. The new displaced surfaces are connected continuosly.
-![Adjacent continuos](images/4.1_adjacent_cont.png)
+These cases are only possible because a single vertex may be used on different triangles. Each of these triangles may have different displacement vectors, displacement textures, and/or displacement texture coordinates.
 
-##### Figure 5-2: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same. The displacements value described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different, with positive height. The new displaced surfaces are directly connected at that vertex to close the new 3D shape using an added segment. The new displacement vector is indicated in Red, the section that needs to be connected is indicated in Green.
-![Adjacent connected](images/4.2_adjacent_direct.png)
+In the first case (Figure 5-1), the displaced surfaces obtained from *T1* and *T2* are connected directly, ignoring the original edge *e* that connected *T1* and *T2*.
 
-##### Figure 5-3: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same as the normal of the corresponding triangle. The displacements values described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different, with positive height. The new displaced surfaces are connected through the common vertex in the mesh to close the new 3D shape. This requires two additional segments, as indicated in Green.
-![Adjacent not connected](images/4.3_adjacent_jump.png)
+##### Figure 5-1: Displacements may disagree on the edges between displacement groups. When the directions agree, but the displacement values do not, the displaced edges are connected directly.
 
-##### Figure 5-4: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same. The displacement values of each vertex belonging to two neighboring triangles are the same, with negative height. The new displaced surfaces are connected continuosly. An analog case might be obtained by specifying a reversed displaement vector (for example on concave surfaces) and positive heights.
-![Adjacent negative continuos](images/4.4_adjacent_neg_cont.png)
+| ![image 1](images/5.1.1_adjacent_direct.png) | ![image 2](images/5.1.2_triangle_cont.png) | ![image 3](images/5.1.3_triangle_cont.png) | ![image 4](images/5.1.4_triangle_cont.png) |
+| :---: | :---: | :---: | :---: |
+| Displacement 2D view | Quad surface with shared displacement vectors | Displaced surfaces showing discontinuity | Directly connected displaced surfaces |
 
-##### Figure 5-5: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same. The displacements value described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different, with negative height.  The new displaced surfaces are directly connected to close the new 3D shape using an added segment. The new displacement vector is indicated in Red, the section that needs to be connected is indicated in Green. An analog case might be obtained by specifying a reversed displaement vector (for example on concave surfaces) and positive heights.
-![Adjacent negative connected](images/4.5_adjacent_neg_direct.png)
+In the second case (Figure 5-2), assuming that the surface breaks along an edge *e* between two triangles *T1* and *T2*, this is avoided by connecting the surfaces displaced from the two triangles to the original edge *e*.
 
-##### Figure 5-6: shows a 2D view where the normalized displacement vectors of the vertices of a triangle are the same as the normal of the corresponding triangle. The displacements values described in the displacement map for the triangle at the top and the displacement for the triangle displayed on the right side are different, with negative height. The new displaced surfaces are connected through the common vertex in the mesh to close the new 3D shape. This requires two additional segments, as indicated in Green. This produces a self-intersection that MUST be removed using the [Fill Rule in the Core Specification](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#411-fill-rule). An analog case might be obtained by specifying a reversed displaement vector (for example on concave surfaces) and positive heights.
-![Adjacent negative not connected](images/4.6_adjacent_neg_jump.png)
+##### Figure 5-2: Displacements may disagree on the edges between displacement groups. When the directions do not match, the original edge serves to connect the result of displacing the two triangles.
+
+| ![image 1](images/5.2.1_adjacent_jump.png) | ![image 2](images/5.2.2_triangle_jump.png) | ![image 3](images/5.2.3_triangle_jump.png) | ![image 4](images/5.2.4_triangle_jump.png) |
+| :---: | :---: | :---: | :---: |
+| Displacement 2D view | Quad surface with different displacement vectors | Displaced surfaces showing discontinuity | Connected displaced surfaces through the original edge |
+
+The displaced surface may have self-intersections. But if this is the case, the *Fill Rule* as defined in the 3MF core specification ([4.1.1 Fill Rule](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#411-fill-rule)) SHOULD be used to determine which parts are inside the volume (see Figure 5-3).
+
+##### Figure 5-3: In this example, all the displacement vectors point outwards, but height = 40 and offset = -20. As a result, displacement values are produced within a range of [􀀀20; 20]. Moreover, the displacement texture is a mix of noise and a gradient, which produces self-intersections in the edge common to the two displaced faces of the base cube. These are solved according to the 3MF fill rule.
+
+| ![image 1](images/5.3.1_adjacent_neg_jump.png) | ![image 2](images/5.3.2_triangle_neg_jump.png) | ![image 3](images/5.3.3_triangle_neg_jump.png) | ![image 4](images/5.3.4_triangle_neg_jump.png) |
+| :---: | :---: | :---: | :---: |
+| Displacement 2D view | Quad surface with different displacement vectors | Displaced surfaces showing discontinuity | Connected displaced surfaces through the original edge |
 
 ## 5.3 Displacement Map and Properties
 
