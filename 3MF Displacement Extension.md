@@ -13,7 +13,7 @@
 
 
 
-| **Version** | 0.7.0 |
+| **Version** | 0.7.1 |
 | --- | --- |
 | **Status** | Draft |
 
@@ -30,8 +30,6 @@
   * [Chapter 3. Resources](#chapter-3-resources)
     + [3.1 Displacement2D](#31-displacement2d)
     + [3.2 Disp2DGroup](#32-disp2dgroup)
-      - [3.2.1 NormVector](#321-normvector)
-      - [3.2.1 Disp2DCoords](#322-disp2dcoords)
   * [Chapter 4. Object](#chapter-4-object)
 	+ [4.1 Triangle](#41-triangle)
   * [Chapter 5. Usage rules](#chapter-5-usage-rules)
@@ -546,7 +544,6 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 			<xs:enumeration value="R"/>
 			<xs:enumeration value="G"/>
 			<xs:enumeration value="B"/>
-			<xs:enumeration value="A"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="ST_TileStyle">
