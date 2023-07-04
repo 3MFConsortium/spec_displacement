@@ -217,7 +217,7 @@ The effect of the two filtering modes is presented in Figure 2-7.
 | :---: | :---: | :---: |
 | Simple 3×3 displacement texture | Result with filter mode *nearest* | Result with filter mode *linear* |
 
-This integer coordinates $(i, j)$ may range over $[0, 1]^2$. To retrieve the actual value then we need to map them onto an equivalent pair $(i^\prime, j^\prime)\in\{0..H-1\}\times\{0..W-1\}$ of the same value, which is done independently on each component, using the tiling option for the corresponding direction. If L denotes the length of the image in the direction under scrutiny (*H* for *i*, and *W* for *j*), then:
+This integer coordinates $(i, j)$ may range over $[0, 1]^2$. To retrieve the actual value then we need to map them onto an equivalent pair $(i^\prime, j^\prime)\in \\{0..H-1\\}\times \\{0..W-1 \\}$ of the same value, which is done independently on each component, using the tiling option for the corresponding direction. If L denotes the length of the image in the direction under scrutiny (*H* for *i*, and *W* for *j*), then:
 
 $$
 	\begin{array}{rcl}
@@ -240,7 +240,7 @@ $$ C(i, j) =  \begin{cases}
 \end{cases}
 $$
 
-where the result of applying $TILE_i$ is always an integer in $\{0..L-1\}$, and they all reduce to the identity if their first argument is already in that range.
+where the result of applying $TILE_i$ is always an integer in $\\{0..L-1\\}$, and they all reduce to the identity if their first argument is already in that range.
 
 ##### Figure 2-8: The different tiling texture modes control how the displacement texture image is extended outside the square between $(0, 0)$ and $(1, 1)$.
 
