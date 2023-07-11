@@ -250,7 +250,7 @@ where the result of applying $TILE_i$ is always an integer in $\\{0..L-1\\}$, an
 
 | ![tiling wrap](images/2.9_tiling_wrap.png) | ![tiling mirror](images/2.9_tiling_mirror.png) | ![tiling clamp](images/2.9_tiling_clamp.png) | ![tiling none](images/2.9_tiling_none.png) |
 | :---: | :---: | :---: | :---: |
-| WRAP | MIRROR | CLAP | NONE |
+| WRAP | MIRROR | CLAMP | NONE |
 
 # Chapter 3. Resources
 
