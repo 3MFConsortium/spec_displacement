@@ -128,7 +128,7 @@ Specifying the triangle in this manner connects the position of any 3D point on 
 
 Denote as $n(u, v)$ the displacement vectors associated to each point of triangle *T*, and $f(u, v)$ as an associated scale factor. This factor will scale the effect of the displacement, so that its effect can be reduced at certain vertices. Then, the geometry $\tilde{p}$(u, v) of triangle *T* after displacement may be expressed as the sum of the base mesh and the displacement as:
 
-$$ \tilde{p}(u, v) = p(u, v) + dm(u, v) \cdot f(u, v) \cdot n(u, v $$
+$$ \tilde{p}(u, v) = p(u, v) + dm(u, v) \cdot f(u, v) \cdot n(u, v) $$
 
 Figure 3 shows a triangle in the mesh is uv-mapped to a displacement texture:
 
