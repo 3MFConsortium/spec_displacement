@@ -77,18 +77,18 @@ See [the 3MF Core Specification software conformance](https://github.com/3MFCons
 
 # Chapter 1. Overview of Additions
 
-##### Figure 1-1: Encoding of an Initial sphere mesh (a), Encoding of a sphere mesh with a displacement map (b), Encoding of the retesselated sphere (c).
+##### Figure 1-1: Encoding of an Initial sphere mesh (a), Encoding of a sphere mesh with a displacement map (b), Encoding of the re-tesselated sphere (c).
 
-| ![Sphere Mesh](images/1_overview_1.png) | ![Sphere mesh with greyscale displacement](images/1_overview_2.png) | ![Retesselated Sphere mesh](images/1_overview_3.png) |
+| ![Sphere Mesh](images/1_overview_1.png) | ![Sphere mesh with greyscale displacement](images/1_overview_2.png) | ![Re-tesselated Sphere mesh](images/1_overview_3.png) |
 | :---: | :---: | :---: |
-| Sphere mesh (27.500 triangles, 411kB). | Sphere mesh with greyscale displacement map (27.500 triangles, 1.2MB) | Retesselated Sphere mesh (660.000 triangles, 12.1MB)|
+| Sphere mesh (27.500 triangles, 411kB). | Sphere mesh with greyscale displacement map (27.500 triangles, 1.2MB) | Re-tesselated Sphere mesh (660.000 triangles, 12.1MB)|
 
 The rationale of the displacement specification extension is to enhance mesh geometry by a displacement mapping. This is achieved displacing the 3D mesh geometry using a scalar map that describes the offset in the direction of the displacement vector. This allows a very memory effective and accurate description of complex geometry.
 
 This means that the displacement information of a triangle is given by:
 - UV coordinates for each corner.
 - A scalar 2D image for representing the "heightmap".
-- A displacement vector for each corner which can be interpolated on the surface.
+- A displacement vector for each corner which is interpolated on the surface.
 
 This document describes new elements, each of which is OPTIONAL for producers, but MUST be supported by consumers that specify support for this displacement extension of 3MF.
 
@@ -315,7 +315,7 @@ The displacement map (dm), at barycentric coordinates u, v,is computed by:
 
 where the texture value is in the range [0, 1], and the displacement map is applied in the model unit resolution, as specified in the 3MF core specification ([3.4 Model](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#34-model)).
 
-A positive displacement map specifies an embossing and a negative displacement map especifies a debossing of the original mesh.
+A positive displacement map specifies an embossing and a negative displacement map specifies a debossing of the original mesh.
 
 To avoid integer overflows, a texture coordinate group MUST contain less than 2^31 disp2dcoords.
 
@@ -364,7 +364,7 @@ The \<disp2dcoords> element maps a vertex of a triangle to a position in image s
 
 **u, v** - The U, V coordinates within the texture image. The lower left corner of the texture is the u, v coordinate (0,0), and the upper right coordinate is (1,1). The UV values are not restricted to this range. When the UV coordinates exceed the [0,1] range, the tilestyleu and tilestylev MUST be applied according to the tiling specified in [3.1 Displacement2D](#31-displacement2d).
 
-**n** - The index to the normalized displacement vector, defined by the \<normvector> ellements in the enclosing group.
+**n** - The index to the normalized displacement vector, defined by the \<normvector> elements in the enclosing group.
 
 **f** - The optional displacement factor applied to the texture(u,v) value, in order to modulate the displacement vector across a triangle.
 
@@ -387,7 +387,7 @@ Element **\<object>**
 
 The \<object> element is enhanced with a new attribute "did" to specify an optional default displacement group in the triangle mesh.
 
-**did** - Specifies the default desplacement map ID for the triangles in the mesh. This ID is ignored is no displacement maps is selected in any triangle.
+**did** - Specifies the default displacement map ID for the triangles in the mesh. This ID is ignored is no displacement maps is selected in any triangle.
 
 ## 4.1 Triangle
 Element **\<triangle>**
@@ -404,7 +404,7 @@ Element **\<triangle>**
 
 In addition to the \<triangle> element specified in the 3MF core specification ([4.1.4.1 Triangle](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#4141-triangle)), the \<triangle> element is extended with the optional displacement map for each vertex.
 
-**did** - Specifies the desplacement group ID for the triangles in the mesh, overriding the default displacement map ID in the enclosing object, whether specified. The "did" is ignored is no displacement maps indices are selected in triangle. The "did" MUST be specified if "d1" is specified and no "did" specified at object level.
+**did** - Specifies the displacement group ID for the triangles in the mesh, overriding the default displacement map ID in the enclosing object, whether specified. The "did" is ignored is no displacement maps indices are selected in triangle. The "did" MUST be specified if "d1" is specified and no "did" specified at object level.
 
 **d1, d2, d3** - Specify the indices to the displacement maps in the selected displacement group for the vertices "v1", "v2" and "v3", respectively.
 
@@ -424,7 +424,7 @@ When applying the displacement map to a mesh, the resultant shape might be embos
 
 The final shape MUST be resolved by applying the *Fill Rule* as defined in the 3MF core specification ([4.1.1 Fill Rule](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#411-fill-rule)).
 
-For efficient displacment maps the producer SHOULD not generate self-intersecting displaced shapes, since this MAY cause overhead in the consumer.
+For efficient displacement maps the producer SHOULD not generate self-intersecting displaced shapes, since this MAY cause overhead in the consumer.
 
 ## 5.2 Adjacent Triangles
 
@@ -444,7 +444,7 @@ In the first case (Figure 5-1), the displaced surfaces obtained from *T1* and *T
 | :---: | :---: | :---: | :---: |
 | Displacement 2D view | Quad surface with shared displacement vectors | Displaced surfaces showing discontinuity | Directly connected displaced surfaces |
 
-In the second case (Figure 5-2), assuming that the surface breaks along an edge *e* between two triangles *T1* and *T2*, this is avoided by connecting the surfaces displaced from the two triangles to the original edge *e*.
+In the second case (Figure 5-2), if the surface breaks along an edge *e* between two triangles *T1* and *T2*, this is avoided by connecting the surfaces displaced from the two triangles to the original edge *e*.
 
 ##### Figure 5-2: Displacements may disagree on the edges between displacement groups. When the directions do not match, the original edge serves to connect the result of displacing the two triangles.
 
