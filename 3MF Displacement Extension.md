@@ -13,7 +13,7 @@
 
 
 
-| **Version** | 0.7.3 |
+| **Version** | 0.7.4 |
 | --- | --- |
 | **Status** | Draft |
 
@@ -29,7 +29,8 @@
   * [Chapter 2. Displacement Maps](#chapter-2-displacement-maps)
   * [Chapter 3. Resources](#chapter-3-resources)
     + [3.1 Displacement2D](#31-displacement2d)
-    + [3.2 Disp2DGroup](#32-disp2dgroup)
+    + [3.2 NormVectorGroup](#32-normvectorgroup)
+    + [3.3 Disp2DGroup](#33-disp2dgroup)
   * [Chapter 4. Object](#chapter-4-object)
 	+ [4.1 Triangle](#41-triangle)
   * [Chapter 5. Usage rules](#chapter-5-usage-rules)
@@ -63,7 +64,7 @@ This extension MUST be used only with Core specification 1.x.
 
 See [the 3MF Core Specification conventions](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#document-conventions).
 
-In this extension specification, as an example, the prefix "d" maps to the xml-namespace "http://schemas.microsoft.com/3dmanufacturing/displacement/2018/05". See Appendix [C.3 Namespaces](#c3-namespaces).
+In this extension specification, as an example, the prefix "d" maps to the xml-namespace "http://schemas.microsoft.com/3dmanufacturing/displacement/2023/05". See Appendix [C.3 Namespaces](#c3-namespaces).
 
 ## Language Notes
 
@@ -286,38 +287,21 @@ The displacement texture values range are independent from the image coding rang
 
 **filter** - The producer MAY require the use of a specific filter type by specifying either “linear” for bilinear interpolation or “nearest” for nearest neighbor interpolation. The producer SHOULD use “auto” to indicate to the consumer to use the highest quality filter available. If the source texture is scaled with the model, the specified filter type MUST be applied to the scaling operation. The default value is “auto”.
 
-## 3.2 Disp2DGroup
-Element **\<disp2dgroup>**
+## 3.2 NormVectorGroup
+Element **\<normvectorgroup>**
 
-![Disp2dGroup XML structure](images/xsd_disp2dgroup.png)
+![NormVectorGroup XML structure](images/xsd_normvectorgroup.png)
 
 | Name   | Type   | Use   | Default   | Annotation |
 | --- | --- | --- | --- | --- |
-| id | **ST\_ResourceID** | required |   | ResourceID of this Disp2dGroup resource |
-| dispid | **ST\_ResourceID** | required |   | ID of the Displacement map used in this group |
-| height | **ST\_Number** | required |   | The amplitude of the mapped values in the texture |
-| offset | **ST\_Number** |  |  0 | Offset to the displacement map amplitude |
+| id | **ST\_ResourceID** | required |   | ResourceID of this NormVectorGroup resource |
 | @anyAttribute | | | | |
 
-A \<disp2dgroup> element acts as a container for texture coordinate properties. The order of these elements forms an implicit 0-based index that is referenced by other elements, such as the \<object> and \<triangle> elements. It also specifies which image to use, via dispid. The referenced \<displacement2d> elements are described above in [2.1 Displacement2D](#21-displacement2d).
-
-**id** - Specifies a unique identifier for this displacement resource. 
-
-**dispid** - Selects the ID of the Displacement map used in this displacement group. 
-
-**height** - The height attribute defines the displacement amplitude in the model units for the maximum texture value range.
-
-**offset** - The offset attribute defines the displacement offset in the model units. The offset default value is 0.
-
-The displacement map (dm), at barycentric coordinates u, v,is computed by:
-
-	dm(u,v) = texture(u,v) * height + offset
-
-where the texture value is in the range [0, 1], and the displacement map is applied in the model unit resolution, as specified in the 3MF core specification ([3.4 Model](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#34-model)).
-
-A positive displacement map specifies an embossing and a negative displacement map specifies a debossing of the original mesh.
+A \<normvectorgroup> element acts as a container for normalized vectors properties. The order of these elements forms an implicit 0-based index that is referenced by the \<disp2dcoords> element.
 
 To avoid integer overflows, a texture coordinate group MUST contain less than 2^31 disp2dcoords.
+
+**id** - Specifies a unique identifier for this displacement resource. 
 
 ### 3.2.1 NormVector
 Element **\<normvector>**
@@ -347,7 +331,43 @@ Which is:
 
 	displacement vector = displacement map * factor * normalized vector
 
-### 3.2.2 Disp2DCoords
+## 3.3 Disp2DGroup
+Element **\<disp2dgroup>**
+
+![Disp2dGroup XML structure](images/xsd_disp2dgroup.png)
+
+| Name   | Type   | Use   | Default   | Annotation |
+| --- | --- | --- | --- | --- |
+| id | **ST\_ResourceID** | required |   | ResourceID of this Disp2dGroup resource |
+| dispid | **ST\_ResourceID** | required |   | ID of the Displacement map used in this group |
+| nid | **ST\_ResourceID** | required | | ID of the normalized vector group used in this group |
+| height | **ST\_Number** | required |   | The amplitude of the mapped values in the texture |
+| offset | **ST\_Number** |  |  0 | Offset to the displacement map amplitude |
+| @anyAttribute | | | | |
+
+A \<disp2dgroup> element acts as a container for texture coordinate properties. The order of these elements forms an implicit 0-based index that is referenced by other elements, such as the \<object> and \<triangle> elements. It also specifies which image to use, via dispid. The referenced \<displacement2d> elements are described above in [2.1 Displacement2D](#21-displacement2d).
+
+**id** - Specifies a unique identifier for this displacement resource. 
+
+**dispid** - Selects the ID of the Displacement map used in this displacement group. 
+
+**nid** - Specifies the normalized vector group used in this displacement group. 
+
+**height** - The height attribute defines the displacement amplitude in the model units for the maximum texture value range.
+
+**offset** - The offset attribute defines the displacement offset in the model units. The offset default value is 0.
+
+The displacement map (dm), at barycentric coordinates u, v,is computed by:
+
+	dm(u,v) = texture(u,v) * height + offset
+
+where the texture value is in the range [0, 1], and the displacement map is applied in the model unit resolution, as specified in the 3MF core specification ([3.4 Model](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#34-model)).
+
+A positive displacement map specifies an embossing and a negative displacement map specifies a debossing of the original mesh.
+
+To avoid integer overflows, a texture coordinate group MUST contain less than 2^31 disp2dcoords.
+
+### 3.3.1 Disp2DCoords
 Element **\<disp2dcoords>**
 
 ![Disp2dCoords XML structure](images/xsd_disp2dcoords.png)
@@ -364,7 +384,7 @@ The \<disp2dcoords> element maps a vertex of a triangle to a position in image s
 
 **u, v** - The U, V coordinates within the texture image. The lower left corner of the texture is the u, v coordinate (0,0), and the upper right coordinate is (1,1). The UV values are not restricted to this range. When the UV coordinates exceed the [0,1] range, the tilestyleu and tilestylev MUST be applied according to the tiling specified in [3.1 Displacement2D](#31-displacement2d).
 
-**n** - The index to the normalized displacement vector, defined by the \<normvector> elements in the enclosing group.
+**n** - The index to the normalized displacement vector, defined by the \<normvector> elements in the selected \<normvectorgroup>.
 
 **f** - The optional displacement factor applied to the texture(u,v) value, in order to modulate the displacement vector across a triangle.
 
@@ -476,9 +496,9 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?> 
-<xs:schema xmlns="http://schemas.microsoft.com/3dmanufacturing/displacement/2018/05"
+<xs:schema xmlns="http://schemas.microsoft.com/3dmanufacturing/displacement/2023/05"
 	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace"
-	targetNamespace="http://schemas.microsoft.com/3dmanufacturing/displacement/2018/05"
+	targetNamespace="http://schemas.microsoft.com/3dmanufacturing/displacement/2023/05"
 	elementFormDefault="unqualified" attributeFormDefault="unqualified" blockDefault="#all">
 	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd"/>
 	<xs:annotation> 
@@ -498,6 +518,7 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 		<xs:sequence>
 			<xs:choice minOccurs="0" maxOccurs="2147483647">
 				<xs:element ref="displacement2d" minOccurs="0" maxOccurs="2147483647"/>
+				<xs:element ref="normvectorgroup" minOccurs="0" maxOccurs="2147483647"/>
 				<xs:element ref="disp2dgroup" minOccurs="0" maxOccurs="2147483647"/>
 				<xs:any namespace="##other" processContents="lax" minOccurs="0"
 					maxOccurs="2147483647"/>
@@ -519,14 +540,23 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 	
 	<xs:complexType name="CT_Disp2DGroup">
 		<xs:sequence>
-			<xs:element ref="normvector" minOccurs="1" maxOccurs="2147483647"/>
 			<xs:element ref="disp2dcoord" minOccurs="1" maxOccurs="2147483647"/>
 			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="2147483647"/>
 		</xs:sequence>
 		<xs:attribute name="id" type="ST_ResourceID" use="required"/>
 		<xs:attribute name="dispid" type="ST_ResourceID" use="required"/>
+		<xs:attribute name="nid" type="ST_ResourceID" use="required"/>
 		<xs:attribute name="height" type="ST_Number" use="required"/>
 		<xs:attribute name="offset" type="ST_Number" default="0"/>
+		<xs:anyAttribute namespace="##other" processContents="lax"/> 
+	</xs:complexType>
+	
+	<xs:complexType name="CT_NormalizedVectorGroup">
+		<xs:sequence>
+			<xs:element ref="normvector" minOccurs="1" maxOccurs="2147483647"/>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="2147483647"/>
+		</xs:sequence>
+		<xs:attribute name="id" type="ST_ResourceID"  use="required"/>
 		<xs:anyAttribute namespace="##other" processContents="lax"/> 
 	</xs:complexType>
 	
@@ -570,6 +600,7 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 			<xs:enumeration value="R"/>
 			<xs:enumeration value="G"/>
 			<xs:enumeration value="B"/>
+			<xs:enumeration value="A"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="ST_TileStyle">
@@ -619,6 +650,7 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 	<!-- Elements -->
 	<xs:element name="resources" type="CT_Resources"/>
 	<xs:element name="displacement2d" type="CT_Displacement2D"/>
+	<xs:element name="normvectorgroup" type="CT_NormalizedVectorGroup"/>
 	<xs:element name="normvector" type="CT_NormalizedVector"/>
 	<xs:element name="disp2dgroup" type="CT_Disp2DGroup"/>	
 	<xs:element name="disp2dcoord" type="CT_Disp2DCoord"/>
@@ -631,7 +663,7 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 
 | | |
 | --- | --- |
-|Displacement | [http://schemas.microsoft.com/3dmanufacturing/displacement/2018/05](http://schemas.microsoft.com/3dmanufacturing/displacement/2018/05) |
+|Displacement | [http://schemas.microsoft.com/3dmanufacturing/displacement/2023/05](http://schemas.microsoft.com/3dmanufacturing/displacement/2023/05) |
 
 # Appendix D: Example file
 
@@ -639,7 +671,7 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <model xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02"
-  xmlns:d="http://schemas.microsoft.com/3dmanufacturing/displacement/2018/05"
+  xmlns:d="http://schemas.microsoft.com/3dmanufacturing/displacement/2023/05"
   unit="millimeter" xml:lang="en-US">
   <resources>
     <d:displacement2d id="10" path="/3D/Textures/label_mono.png" contenttype="image/png"/>
