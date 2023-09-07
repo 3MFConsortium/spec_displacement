@@ -265,7 +265,7 @@ Element **\<displacement2d>**
 | id | **ST\_ResourceID** | required |   | ResourceID of this displacement resource. |
 | path | **ST\_UriReference** | required |   | Path to the displacement image file. |
 | contenttype | **ST\_ContentType** | required |   | Content type of the texture resource. PNG or JPEG allowed. |
-| channel | **ST\_ChannelName** | optional | G | Specifies which channel to reference in the displacement texture. Valid values are R, G, B. Ignored for monochromatic images. |
+| channel | **ST\_ChannelName** |  | G | Specifies which channel to reference in the displacement texture. Valid values are R, G, B. Ignored for monochromatic images. |
 | tilestyleu | **ST_TileStyle** |  | wrap | Specifies how tiling should occur in the u axis in order to fill the overall requested area. Valid values are wrap, mirror, clamp, none. |
 | tilestylev | **ST_TileStyle** |  | wrap | Specifies how tiling should occur in the v axis in order to fill the overall requested area. Valid values are wrap, mirror, clamp, none. |
 | filter | **ST_Filter** |  | auto | Specifies the texture filter to apply when scaling the source texture.  Allowed values are “auto”, “linear”, “nearest”. |
@@ -277,7 +277,7 @@ A displacement texture resource provides information about texture image data, f
 
 **path** - Specifies the path to the displacement image file.
 
-**contenttype** - The only supported content types are JPEG and PNG, as more specifically specified in the 3MF core spec under the [6.1. Thumbnail](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#61-thumbnail) section.
+**contenttype** - The only supported content types are JPEG and PNG, as described in the 3MF core spec under the [6.1. Thumbnail](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#61-thumbnail) section.
 
 **channel** - The channel attribute selects which of the R, G or B channels defines the displacement texture. This *channel* attribute MUST be ignored for monochromatic images.
 
@@ -407,7 +407,7 @@ Element **\<object>**
 
 The \<object> element is enhanced with a new attribute "did" to specify an optional default displacement group in the triangle mesh.
 
-**did** - Specifies the default displacement map ID for the triangles in the mesh. This ID is ignored is no displacement maps is selected in any triangle.
+**did** - Specifies the default displacement map ID for the triangles in the mesh. This ID is ignored if no displacement maps is selected in any triangle.
 
 ## 4.1 Triangle
 Element **\<triangle>**
@@ -428,9 +428,9 @@ In addition to the \<triangle> element specified in the 3MF core specification (
 
 **d1, d2, d3** - Specify the indices to the displacement maps in the selected displacement group for the vertices "v1", "v2" and "v3", respectively.
 
-The displacement map applied to each vertex (d1, d2, d3) allow displacement to be defined across the triangle by mapping to the displacement texture and the displacement vector.
+The displacement map applied to each vertex (d1, d2, d3) allows displacement to be defined across the triangle by mapping to the displacement texture and the displacement vector.
 
-The displacement group is specified by the did attribute. Since this is applied to the whole triangle, it implicitly forces the three displacement map indices to be from the same group. If "d1" is specified then the did attribute MUST be specified, either in the triangle or in the enclosing object. If "d2" or "d3" are unspecified then "d1" is used for the entire triangle. If "d1" is unspecified then no displacement map is applied to the triangle, and the "did" is ignored.
+The displacement group is specified by the "did" attribute. Since this is applied to the whole triangle, it implicitly forces the three displacement map indices to belong to the same group. If "d1" is specified then the "did" attribute MUST be specified, either in the triangle or in the enclosing object. If "d2" or "d3" are unspecified then "d1" is used for the entire triangle. If "d1" is unspecified then no displacement map is applied to the triangle, and the "did" is ignored.
 
 As the displacement maps applied to a mesh defines a new shape, any transform to the object MUST be applied to that new shape.
 
@@ -474,7 +474,7 @@ In the second case (Figure 5-2), if the surface breaks along an edge *e* between
 
 The displaced surface may have self-intersections. But if this is the case, the *Fill Rule* as defined in the 3MF core specification ([4.1.1 Fill Rule](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#411-fill-rule)) SHOULD be used to determine which parts are inside the volume (see Figure 5-3).
 
-##### Figure 5-3: In this example, all the displacement vectors point outwards, but height = 40 and offset = -20. As a result, displacement values are produced within a range of [􀀀20; 20]. Moreover, the displacement texture is a mix of noise and a gradient, which produces self-intersections in the edge common to the two displaced faces of the base cube. These are solved according to the 3MF fill rule.
+##### Figure 5-3: In this example, all the displacement vectors point outwards, but height = 40 and offset = -20. As a result, displacement values are produced within a range of [-20, 20]. Moreover, the displacement texture is a mix of noise and a gradient, which produces self-intersections in the edge common to the two displaced faces of the base cube. These are solved according to the 3MF fill rule.
 
 | ![image 1](images/5.3.1_adjacent_neg_jump.png) | ![image 2](images/5.3.2_triangle_neg_jump.png) | ![image 3](images/5.3.3_triangle_neg_jump.png) | ![image 4](images/5.3.4_triangle_neg_jump.png) |
 | :---: | :---: | :---: | :---: |
