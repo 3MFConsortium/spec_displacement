@@ -147,7 +147,7 @@ where $texture(u, v)$ denotes the value returned by sampling the displacement te
 
 | ![image 1](images/2.4_scale_1.png) | ![image 2](images/2.4_scale_2.png) | ![image 3](images/2.4_scale_3.png) | ![image 4](images/2.4_scale_4.png) |
 | :---: | :---: | :---: | :---: |
-| Base squad | Offset = 0 and height = 1 | Offset = −0.5 and height = 1 | Offset = 0 and height = 2 |
+| Base quad | Offset = 0 and height = 1 | Offset = −0.5 and height = 1 | Offset = 0 and height = 2 |
 
 Regarding the displacement vectors *n(u, v)*, we could use the normal of each triangle *T* for the displacement
 produced from *T*. Better control may be provided by assigning normalized displacement vectors $n_1, n_2, n_3$ at each
