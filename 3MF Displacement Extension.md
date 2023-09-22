@@ -178,7 +178,7 @@ We also need to define what happens for texture coordinates outside the domain $
 
 Assume we are applying a displacement texture of $W × H$ pixels, and want to determine the value at texture coordinates $(u, v)$. We first transform $(u, v)$ to image space (see Figure 2-6):
 
-$$ (u, v) \longrightarrow (i_c, j_c) = \big(u\cdot W-0.5,\; (1-v)\cdot H-0.5\big) $$
+$$ (u, v) \longrightarrow (i_c, j_c) = \big(\; (1-v)\cdot H-0.5, u \cdot W-0.5\big) $$
 
 ##### Figure 2-6: Texture coordinates need to be transformed to image space, so the corresponding texels may be accessed.
 
