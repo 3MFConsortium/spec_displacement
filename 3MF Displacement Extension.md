@@ -420,7 +420,7 @@ To be decoupled from 3MF extension to the _mesh_ element in the Core Specificati
 
 ```xml
 <d:displacementmesh>
-	<d:vertices>
+    <d:vertices>
         <d:vertex x="152.345" y="84.2476" z="16.92"/>
         <d:vertex x="192.345" y="84.2476" z="16.92"/>
         <d:vertex x="172.347" y="104.25" z="56.918"/>
