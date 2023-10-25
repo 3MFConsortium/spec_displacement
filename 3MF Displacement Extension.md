@@ -13,7 +13,7 @@
 
 
 
-| **Version** | 0.7.4 |
+| **Version** | 0.8.0 |
 | --- | --- |
 | **Status** | Draft |
 
@@ -32,7 +32,7 @@
     + [3.2 NormVectorGroup](#32-normvectorgroup)
     + [3.3 Disp2DGroup](#33-disp2dgroup)
   * [Chapter 4. Object](#chapter-4-object)
-	+ [4.1 Triangle](#41-triangle)
+	+ [4.1 Displacement Mesh](#41-displacement-mesh)
   * [Chapter 5. Usage rules](#chapter-5-usage-rules)
 	+ [5.1 Fill Rule](#51-fill-rule)
 	+ [5.2 Adjacent Triangles](#52-adjacent-triangles)
@@ -78,11 +78,11 @@ See [the 3MF Core Specification software conformance](https://github.com/3MFCons
 
 # Chapter 1. Overview of Additions
 
-##### Figure 1-1: Encoding of an Initial sphere mesh (a), Encoding of a sphere mesh with a displacement map (b), Encoding of the re-tesselated sphere (c).
+##### Figure 1-1: Encoding of an Initial sphere mesh (a), Encoding of a sphere mesh with a displacement map (b), Encoding of the re-tessellated sphere (c).
 
-| ![Sphere Mesh](images/1_overview_1.png) | ![Sphere mesh with greyscale displacement](images/1_overview_2.png) | ![Re-tesselated Sphere mesh](images/1_overview_3.png) |
+| ![Sphere Mesh](images/1_overview_1.png) | ![Sphere mesh with greyscale displacement](images/1_overview_2.png) | ![Re-tessellated Sphere mesh](images/1_overview_3.png) |
 | :---: | :---: | :---: |
-| Sphere mesh (27.500 triangles, 411kB). | Sphere mesh with greyscale displacement map (27.500 triangles, 1.2MB) | Re-tesselated Sphere mesh (660.000 triangles, 12.1MB)|
+| Sphere mesh (27.500 triangles, 411kB). | Sphere mesh with greyscale displacement map (27.500 triangles, 1.2MB) | Re-tessellated Sphere mesh (660.000 triangles, 12.1MB)|
 
 The rationale of the displacement specification extension is to enhance mesh geometry by a displacement mapping. This is achieved displacing the 3D mesh geometry using a scalar map that describes the offset in the direction of the displacement vector. This allows a very memory effective and accurate description of complex geometry.
 
@@ -91,7 +91,9 @@ This means that the displacement information of a triangle is given by:
 - A scalar 2D image for representing the "heightmap".
 - A displacement vector for each corner which is interpolated on the surface.
 
-This document describes new elements, each of which is OPTIONAL for producers, but MUST be supported by consumers that specify support for this displacement extension of 3MF.
+This document describes a new element \<displacementmesh> in the \<object> elements choice that specifies a new object type, other than a mesh shape or components. This element is OPTIONAL for producers but MUST be supported by consumers that specify support for the 3MF Displacement Extension.
+
+This is a non-backwards compatible change since it declares a different type of object. Therefore, a 3MF package which uses *displacementmesh* objects MUST enlist the 3MF Displacement Extension as “required extension”, as defined in the core specification.
 
 ##### Figure 2-2: Overview of model resources XML structure of 3MF with displacement additions.
 
@@ -394,22 +396,81 @@ The \<disp2dcoords> element maps a vertex of a triangle to a position in image s
 
 # Chapter 4. Object
 
-The 3MF core specification ([Chapter 3. Object](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#chapter-4-object-resources)) is enhanced with new attributes in the \<object> and \<triangle> elements to specify optional displacement maps to triangles of the mesh. 
-
 Element **\<object>**
 
 ![Object](images/xsd_object.png)
+
+The \<object> element is enhanced with an additional element \<displacementmesh> in the object choice, declaring that the object represents a modified mesh shape specifying optional displacement surfaces in the triangles. This extends [the 3MF Core Specification object resources](https://github.com/3MFConsortium/spec_core/blob/1.2.3/3MF%20Core%20Specification.md#chapter-4-object-resources).
+
+The _object_ containing the _displacementmesh_ MUST be an object of type "model".
+
+## 4.1 Displacement Mesh
+
+Element **\<displacementmesh>**
+
+![element displacementmesh](images/xsd_displacementmesh.png)
+
+The \<displacementmesh> element is the root of a triangular _displacement mesh_ shape representation of an object volume. It contains a set of vertices and a set of triangles, similarly to the triangle mesh specified in ([the 3MF Core Specification Meshes](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#41-meshes)).
+
+The <displacementmesh> element is the root of a triangular _displacement mesh_ shape representation of an object volume. If extends the vertices and triangles defined in _mesh_ element in the core specification by specifying optional displacement attributes in the triangles of the mesh. All the mesh rules specified in the ([the 3MF Core Specification Meshes](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#41-meshes)) equally apply to the _displacementmesh_.
+
+Since the displacement information in the triangles is optional, it is possible to specify a _displacementmesh_ with no displaced triangles. However, producers SHOULD convert those _displacementmesh_ to a triangle _mesh_ shape. The _displacementmesh_ shape SHOULD only be used when any triangle in the mesh contains displacement attributes.
+
+To be decoupled from 3MF extension to the _mesh_ element in the Core Specification, all elements under \<displacementmesh> MUST be used specifying the _displacement_ namespace_. See example below:
+
+```xml
+<d:displacementmesh>
+	<d:vertices>
+        <d:vertex x="152.345" y="84.2476" z="16.92"/>
+        <d:vertex x="192.345" y="84.2476" z="16.92"/>
+        <d:vertex x="172.347" y="104.25" z="56.918"/>
+        <d:vertex x="152.345" y="124.248" z="16.92"/>
+        <d:vertex x="192.345" y="124.248" z="16.92"/>
+    </d:vertices>
+    <d:triangles did="18">
+        <d:triangle v1="0" v2="1" v3="2" d1="0" d2="1" d3="2"/>
+      	<d:triangle v1="3" v2="1" v3="0" d1="3" d2="4" d3="5"/>
+        <d:triangle v1="0" v2="2" v3="3"/>
+        <d:triangle v1="1" v2="4" v3="2" d1="6" d2="8" d3="2"/>
+        <d:triangle v1="4" v2="3" v3="2"/>
+        <d:triangle v1="4" v2="1" v3="3" d1="7" d2="4" d3="3"/>
+    </d:triangles>
+</d:displacementmesh>
+```
+
+### 4.1.1 Vertices
+
+Element **\<vertices>**
+
+![element vertices](images/xsd_vertices.png)
+
+The \<vertices> element contains all the <vertex> elements for this object. The vertices represent the corners of each triangle in the mesh. The \<vertices> element inherit the definition and restrictions from ([the 3MF Core Specification Vertices](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#413-vertices)).
+
+### 4.1.1.1 Vertex
+
+Element **\<vertex>**
+
+![element vertices](images/xsd_vertex.png)
+
+The \<vertex> element represents a point in 3-dimensional space that is referenced by a triangle in the mesh. The \<vertex> element inherit the definition and restrictions from ([the 3MF Core Specification Vertex](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#4131-vertex)).
+
+### 4.1.2 Triangles
+
+Element **\<triangles>**
+
+![element vertices](images/xsd_triangles.png)
 
 | Name   | Type   | Use   | Default   | Annotation |
 | --- | --- | --- | --- | --- |
 | did | **ST\_ResourceID** | | | Optional default displacement group id. |
 | @anyAttribute | | | | |
 
-The \<object> element is enhanced with a new attribute "did" to specify an optional default displacement group in the triangle mesh.
+The \<triangles> element contains a set of 4 or more <triangle> elements to describe the 3D object displacement mesh. The \<triangles> element inherit the definition and restrictions from ([the 3MF Core Specification Triangles](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#414-triangles)).
 
-**did** - Specifies the default displacement map ID for the triangles in the mesh. This ID is ignored if no displacement maps is selected in any triangle.
+**did** - Specifies the default displacement map ID for the triangles in the _displacement mesh_. This ID MUST be ignored if no displacement maps is selected in any triangle.
 
-## 4.1 Triangle
+### 4.1.2.1 Triangle
+
 Element **\<triangle>**
 
 ![Triangle](images/xsd_triangle.png)
@@ -422,17 +483,19 @@ Element **\<triangle>**
 | did | **ST\_ResourceID** | | | Displacement map id for the triangle. When specified. |
 | @anyAttribute | | | | |
 
-In addition to the \<triangle> element specified in the 3MF core specification ([4.1.4.1 Triangle](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#4141-triangle)), the \<triangle> element is extended with the optional displacement map for each vertex.
+The \<triangle> element represents a single face of the displacement mesh. The \<triangle> element inherit the definition and restrictions from ([the 3MF Core Specification Triangle](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#4141-triangle)).
 
-**did** - Specifies the displacement group ID for the triangles in the mesh, overriding the default displacement map ID in the enclosing object, whether specified. The "did" is ignored is no displacement maps indices are selected in triangle. The "did" MUST be specified if "d1" is specified and no "did" specified at object level.
+In addition to the attributes specified in the 3MF core specification the \<triangle> element is extended with the optional displacement map for each vertex.
+
+**did** - Specifies the displacement group ID for the triangles in the mesh, overriding the default displacement map ID in the enclosing \<triangles> element, whether specified. The "did" is ignored is no displacement maps indices are selected in triangle. The "did" MUST be specified if "d1" is specified and no "did" is specified at _triangles_ level.
 
 **d1, d2, d3** - Specify the indices to the displacement maps in the selected displacement group for the vertices "v1", "v2" and "v3", respectively.
 
 The displacement map applied to each vertex (d1, d2, d3) allows displacement to be defined across the triangle by mapping to the displacement texture and the displacement vector.
 
-The displacement group is specified by the "did" attribute. Since this is applied to the whole triangle, it implicitly forces the three displacement map indices to belong to the same group. If "d1" is specified then the "did" attribute MUST be specified, either in the triangle or in the enclosing object. If "d2" or "d3" are unspecified then "d1" is used for the entire triangle. If "d1" is unspecified then no displacement map is applied to the triangle, and the "did" is ignored.
+The displacement group is specified by the "did" attribute. Since this is applied to the whole triangle, it implicitly forces the three displacement map indices to belong to the same group. If "d1" is specified then the "did" attribute MUST be specified, either in the triangle or in the enclosing _triangles_. If "d2" or "d3" are unspecified then "d1" is used for the entire triangle. If "d1" is unspecified then no displacement map is applied to the triangle, and the "did" is ignored.
 
-As the displacement maps applied to a mesh defines a new shape, any transform to the object MUST be applied to that new shape.
+As the displacement maps applied to a displacement mesh defines a new shape, any transform to the object MUST be applied to that new shape.
 
 # Chapter 5. Usage rules
 
@@ -496,12 +559,15 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?> 
-<xs:schema xmlns="http://schemas.microsoft.com/3dmanufacturing/displacement/2023/05"
-	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace"
-	targetNamespace="http://schemas.microsoft.com/3dmanufacturing/displacement/2023/05"
+<xs:schema xmlns="http://schemas.microsoft.com/3dmanufacturing/displacement/2023/10"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:core="http://schemas.microsoft.com/3dmanufacturing/core/2015/02"
+	targetNamespace="http://schemas.microsoft.com/3dmanufacturing/displacement/2023/10"
 	elementFormDefault="unqualified" attributeFormDefault="unqualified" blockDefault="#all">
-	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd"/>
-	<xs:annotation> 
+	<xs:import namespace="http://www.w3.org/XML/1998/namespace"
+		schemaLocation="http://www.w3.org/2001/xml.xsd"/>
+	<xs:import namespace="http://schemas.microsoft.com/3dmanufacturing/core/2015/02" schemaLocation="core_1.2.xsd"/>
+	<xs:annotation>
 		<xs:documentation><![CDATA[   Schema notes: 
  
   Items within this schema follow a simple naming convention of appending a prefix indicating the type of element for references: 
@@ -510,11 +576,11 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
   CT_: Complex types 
   ST_: Simple types 
    
-  ]]></xs:documentation> 
-	</xs:annotation> 
-	
-	<!-- Complex Types --> 
-	<xs:complexType name="CT_Resources"> 
+  ]]></xs:documentation>
+	</xs:annotation>
+
+	<!-- Complex Types -->
+	<xs:complexType name="CT_Resources">
 		<xs:sequence>
 			<xs:choice minOccurs="0" maxOccurs="2147483647">
 				<xs:element ref="displacement2d" minOccurs="0" maxOccurs="2147483647"/>
@@ -524,20 +590,20 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 					maxOccurs="2147483647"/>
 			</xs:choice>
 		</xs:sequence>
-		<xs:anyAttribute namespace="##other" processContents="lax"/> 
+		<xs:anyAttribute namespace="##other" processContents="lax"/>
 	</xs:complexType>
-	
-	<xs:complexType name="CT_Displacement2D">   
+
+	<xs:complexType name="CT_Displacement2D">
 		<xs:attribute name="id" type="ST_ResourceID" use="required"/>
-		<xs:attribute name="path" type="ST_UriReference" use="required" />
+		<xs:attribute name="path" type="ST_UriReference" use="required"/>
 		<xs:attribute name="contenttype" type="ST_ContentType" use="required"/>
 		<xs:attribute name="channel" type="ST_ChannelName" default="G"/>
 		<xs:attribute name="tilestyleu" type="ST_TileStyle" default="wrap"/>
 		<xs:attribute name="tilestylev" type="ST_TileStyle" default="wrap"/>
 		<xs:attribute name="filter" type="ST_Filter" default="auto"/>
-		<xs:anyAttribute namespace="##other" processContents="lax"/> 
+		<xs:anyAttribute namespace="##other" processContents="lax"/>
 	</xs:complexType>
-	
+
 	<xs:complexType name="CT_Disp2DGroup">
 		<xs:sequence>
 			<xs:element ref="disp2dcoord" minOccurs="1" maxOccurs="2147483647"/>
@@ -548,46 +614,85 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 		<xs:attribute name="nid" type="ST_ResourceID" use="required"/>
 		<xs:attribute name="height" type="ST_Number" use="required"/>
 		<xs:attribute name="offset" type="ST_Number" default="0"/>
-		<xs:anyAttribute namespace="##other" processContents="lax"/> 
+		<xs:anyAttribute namespace="##other" processContents="lax"/>
 	</xs:complexType>
-	
+
 	<xs:complexType name="CT_NormalizedVectorGroup">
 		<xs:sequence>
 			<xs:element ref="normvector" minOccurs="1" maxOccurs="2147483647"/>
 			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="2147483647"/>
 		</xs:sequence>
-		<xs:attribute name="id" type="ST_ResourceID"  use="required"/>
-		<xs:anyAttribute namespace="##other" processContents="lax"/> 
+		<xs:attribute name="id" type="ST_ResourceID" use="required"/>
+		<xs:anyAttribute namespace="##other" processContents="lax"/>
 	</xs:complexType>
-	
+
 	<xs:complexType name="CT_NormalizedVector">
 		<xs:attribute name="x" type="ST_Number" use="required"/>
 		<xs:attribute name="y" type="ST_Number" use="required"/>
 		<xs:attribute name="z" type="ST_Number" use="required"/>
-		<xs:anyAttribute namespace="##other" processContents="lax"/> 
+		<xs:anyAttribute namespace="##other" processContents="lax"/>
 	</xs:complexType>
-	
+
 	<xs:complexType name="CT_Disp2DCoord">
 		<xs:attribute name="u" type="ST_Number" use="required"/>
 		<xs:attribute name="v" type="ST_Number" use="required"/>
 		<xs:attribute name="n" type="ST_ResourceIndex" use="required"/>
 		<xs:attribute name="f" type="ST_PositiveNumber" default="1"/>
-		<xs:anyAttribute namespace="##other" processContents="lax"/> 
+		<xs:anyAttribute namespace="##other" processContents="lax"/>
 	</xs:complexType>
-	
+
 	<xs:complexType name="CT_Object">
+		<xs:sequence>
+			<xs:choice>
+				<xs:element ref="displacementmesh"/>
+			</xs:choice>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="2147483647"/>
+		</xs:sequence>
+		<xs:attribute name="did" type="ST_ResourceID"/>
+		<xs:anyAttribute namespace="##other" processContents="lax"/>
+	</xs:complexType>
+
+	<xs:complexType name="CT_DisplacementMesh">
+		<xs:sequence>
+			<xs:element ref="vertices"/>
+			<xs:element ref="triangles"/>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="2147483647"/>
+		</xs:sequence>
+		<xs:anyAttribute namespace="##other" processContents="lax"/>
+	</xs:complexType>
+
+	<xs:complexType name="CT_Vertices">
+		<xs:sequence>
+			<xs:element ref="vertex" minOccurs="3" maxOccurs="2147483647"/>
+		</xs:sequence>
+		<xs:anyAttribute namespace="##other" processContents="lax"/>
+	</xs:complexType>
+
+	<xs:complexType name="CT_Vertex">
+		<xs:complexContent>
+			<xs:extension base="core:CT_Vertex"/>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="CT_Triangles">
+		<xs:sequence>
+			<xs:element ref="triangle" minOccurs="4" maxOccurs="2147483647"/>
+		</xs:sequence>
 		<xs:attribute name="did" type="ST_ResourceID"/>
 		<xs:anyAttribute namespace="##other" processContents="lax"/>
 	</xs:complexType>
 
 	<xs:complexType name="CT_Triangle">
-		<xs:attribute name="d1" type="ST_ResourceIndex"/>
-		<xs:attribute name="d2" type="ST_ResourceIndex"/>
-		<xs:attribute name="d3" type="ST_ResourceIndex"/>
-		<xs:attribute name="did" type="ST_ResourceID"/>
-		<xs:anyAttribute namespace="##other" processContents="lax"/>
+		<xs:complexContent>
+			<xs:extension base="core:CT_Triangle">
+				<xs:attribute name="d1" type="ST_ResourceIndex"/>
+				<xs:attribute name="d2" type="ST_ResourceIndex"/>
+				<xs:attribute name="d3" type="ST_ResourceIndex"/>
+				<xs:attribute name="did" type="ST_ResourceID"/>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
-	
+
 	<!-- Simple Types -->
 	<xs:simpleType name="ST_ContentType">
 		<xs:restriction base="xs:string">
@@ -618,17 +723,17 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 			<xs:enumeration value="nearest"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="ST_UriReference"> 
-		<xs:restriction base="xs:anyURI"> 
-			<xs:pattern value="/.*"/> 
-		</xs:restriction> 
-	</xs:simpleType> 
-	<xs:simpleType name="ST_Number"> 
-		<xs:restriction base="xs:double"> 
-			<xs:whiteSpace value="collapse"/> 
-			<xs:pattern value="((\-|\+)?(([0-9]+(\.[0-9]+)?)|(\.[0-9]+))((e|E)(\-|\+)?[0-9]+)?)"/> 
-		</xs:restriction> 
-	</xs:simpleType> 
+	<xs:simpleType name="ST_UriReference">
+		<xs:restriction base="xs:anyURI">
+			<xs:pattern value="/.*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ST_Number">
+		<xs:restriction base="xs:double">
+			<xs:whiteSpace value="collapse"/>
+			<xs:pattern value="((\-|\+)?(([0-9]+(\.[0-9]+)?)|(\.[0-9]+))((e|E)(\-|\+)?[0-9]+)?)"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="ST_PositiveNumber">
 		<xs:restriction base="xs:double">
 			<xs:whiteSpace value="collapse"/>
@@ -646,17 +751,23 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 			<xs:maxExclusive value="2147483648"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
+	<!-- Attributes -->
+
 	<!-- Elements -->
 	<xs:element name="resources" type="CT_Resources"/>
 	<xs:element name="displacement2d" type="CT_Displacement2D"/>
 	<xs:element name="normvectorgroup" type="CT_NormalizedVectorGroup"/>
 	<xs:element name="normvector" type="CT_NormalizedVector"/>
-	<xs:element name="disp2dgroup" type="CT_Disp2DGroup"/>	
+	<xs:element name="disp2dgroup" type="CT_Disp2DGroup"/>
 	<xs:element name="disp2dcoord" type="CT_Disp2DCoord"/>
 	<xs:element name="object" type="CT_Object"/>
+	<xs:element name="displacementmesh" type="CT_DisplacementMesh"/>
+	<xs:element name="vertices" type="CT_Vertices"/>
+	<xs:element name="vertex" type="CT_Vertex"/>
+	<xs:element name="triangles" type="CT_Triangles"/>
 	<xs:element name="triangle" type="CT_Triangle"/>
-</xs:schema> 
+</xs:schema>
 ```
 
 # Appendix C. Standard Namespace
@@ -671,7 +782,7 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <model xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02"
-  xmlns:d="http://schemas.microsoft.com/3dmanufacturing/displacement/2023/05"
+  xmlns:d="http://schemas.microsoft.com/3dmanufacturing/displacement/2023/10"
   unit="millimeter" xml:lang="en-US">
   <resources>
     <d:displacement2d id="10" path="/3D/Textures/label_mono.png" contenttype="image/png"/>
@@ -693,24 +804,24 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
       <d:disp2dcoord u="0" v="1" n="4"/>
       <d:disp2dcoord u="1" v="0" n="4"/>
     </d:disp2dgroup>
-    <object id="9" d:did="18" name="Scene - DispMaps_13" thumbnail="/Thumbnails/Scene_DispMaps_13.png" type="model">
-      <mesh>
-        <vertices>
-          <vertex x="152.345" y="84.2476" z="16.92"/>
-          <vertex x="192.345" y="84.2476" z="16.92"/>
-          <vertex x="172.347" y="104.25" z="56.918"/>
-          <vertex x="152.345" y="124.248" z="16.92"/>
-          <vertex x="192.345" y="124.248" z="16.92"/>
-        </vertices>
-        <triangles>
-          <triangle v1="0" v2="1" v3="2" d:d1="0" d:d2="1" d:d3="2"/>
-          <triangle v1="3" v2="1" v3="0" d:d1="3" d:d2="4" d:d3="5"/>
-          <triangle v1="0" v2="2" v3="3"/>
-          <triangle v1="1" v2="4" v3="2" d:d1="6" d:d2="8" d:d3="2"/>
-          <triangle v1="4" v2="3" v3="2"/>
-          <triangle v1="4" v2="1" v3="3" d:d1="7" d:d2="4" d:d3="3"/>
-        </triangles>
-      </mesh>
+    <object id="9" name="Scene - DispMaps_13" thumbnail="/Thumbnails/Scene_DispMaps_13.png" type="model">
+      <d:displacementmesh>
+        <d:vertices>
+          <d:vertex x="152.345" y="84.2476" z="16.92"/>
+          <d:vertex x="192.345" y="84.2476" z="16.92"/>
+          <d:vertex x="172.347" y="104.25" z="56.918"/>
+          <d:vertex x="152.345" y="124.248" z="16.92"/>
+          <d:vertex x="192.345" y="124.248" z="16.92"/>
+        </d:vertices>
+        <d:triangles did="18">
+          <d:triangle v1="0" v2="1" v3="2" d1="0" d2="1" d3="2"/>
+          <d:triangle v1="3" v2="1" v3="0" d1="3" d2="4" d3="5"/>
+          <d:triangle v1="0" v2="2" v3="3"/>
+          <d:triangle v1="1" v2="4" v3="2" d1="6" d2="8" d3="2"/>
+          <d:triangle v1="4" v2="3" v3="2"/>
+          <d:triangle v1="4" v2="1" v3="3" d1="7" d2="4" d3="3"/>
+        </d:triangles>
+      </d:displacementmesh>
     </object>
   </resources>
   <build>
