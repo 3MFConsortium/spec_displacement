@@ -465,7 +465,7 @@ Element **\<triangles>**
 | did | **ST\_ResourceID** | | | Optional default displacement group id. |
 | @anyAttribute | | | | |
 
-The \<triangles> element contains a set of 4 or more <triangle> elements to describe the 3D object displacement mesh. The \<triangles> element inherit the definition and restrictions from ([the 3MF Core Specification Triangles](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#414-triangles)).
+The \<triangles> element contains a set of 4 or more \<triangle> elements to describe the 3D object displacement mesh. The \<triangles> element inherit the definition and restrictions from ([the 3MF Core Specification Triangles](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#414-triangles)).
 
 **did** - Specifies the default displacement map ID for the triangles in the _displacement mesh_. This ID MUST be ignored if no displacement maps is selected in any triangle.
 
