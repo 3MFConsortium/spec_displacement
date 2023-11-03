@@ -787,11 +787,11 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
   <resources>
     <d:displacement2d id="10" path="/3D/Textures/label_mono.png" contenttype="image/png"/>
     <d:normvectorgroup id="24">
-      <d:normvector nx="-0.704662" ny="-0.704662" nz="-0.0830916"/>
-      <d:normvector nx="0.704672" ny="-0.704644" nz="-0.0831468"/>
-      <d:normvector nx="2.02911e-5" ny="2.00578e-5" nz="1"/>
-      <d:normvector nx="-0.704644" ny="0.704673" nz="-0.0831459"/>
-      <d:normvector nx="0.704655" ny="0.704655" nz="-0.083201"/>
+      <d:normvector x="-0.704662" y="-0.704662" z="-0.0830916"/>
+      <d:normvector x="0.704672" y="-0.704644" z="-0.0831468"/>
+      <d:normvector x="2.02911e-5" y="2.00578e-5" z="1"/>
+      <d:normvector x="-0.704644" y="0.704673" z="-0.0831459"/>
+      <d:normvector x="0.704655" y="0.704655" z="-0.083201"/>
     </d:normvectorgroup>
     <d:disp2dgroup id="18" dispid="10" nid="24" depth="1.5">
       <d:disp2dcoord u="0" v="0" n="0"/>
