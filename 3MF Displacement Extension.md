@@ -64,7 +64,7 @@ This extension MUST be used only with Core specification 1.x.
 
 See [the 3MF Core Specification conventions](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#document-conventions).
 
-In this extension specification, as an example, the prefix "d" maps to the xml-namespace "http://schemas.microsoft.com/3dmanufacturing/displacement/2023/05". See Appendix [C.3 Namespaces](#c3-namespaces).
+In this extension specification, as an example, the prefix "d" maps to the xml-namespace "http://schemas.microsoft.com/3dmanufacturing/displacement/2023/10". See Appendix [C.3 Namespaces](#c3-namespaces).
 
 ## Language Notes
 
@@ -774,7 +774,7 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 
 | | |
 | --- | --- |
-|Displacement | [http://schemas.microsoft.com/3dmanufacturing/displacement/2023/05](http://schemas.microsoft.com/3dmanufacturing/displacement/2023/05) |
+|Displacement | [http://schemas.microsoft.com/3dmanufacturing/displacement/2023/10](http://schemas.microsoft.com/3dmanufacturing/displacement/2023/10) |
 
 # Appendix D: Example file
 
