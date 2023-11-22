@@ -283,7 +283,7 @@ A displacement texture resource provides information about texture image data, f
 
 **channel** - The channel attribute selects which of the R, G, B or A channels defines the displacement texture. For monochromatic images with a single grayscale channel, the R, G or B channels are equivalent to the grayscale value.
 
-If the image does not contain an alpha channel, producers SHOULD NOT select it. Otherwise it would produce a flat displacement value of 1 across the texture image.
+If the image does not contain an alpha channel, producers SHOULD NOT select it. Otherwise, it would produce a flat displacement value of 1 across the texture image.
 
 The displacement texture values range are independent from the image coding range, either 8-bit or 16-bit, and normalized to [0, 1] range. The normalized displacement values are obtained by dividing each channel by 2<sup>n</sup>-1, where n is the number of bits per channel. For example, in an 8-bit image the pixel values MUST be divided by 255.
 
