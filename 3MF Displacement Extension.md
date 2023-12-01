@@ -113,7 +113,7 @@ This is a non-backwards compatible change since it declares a different type of 
 
 Displacement maps allow the producer to specify the macrostructure and mesostructure of a model separately. The macrostructure corresponds to the general shape of the object, and it is represented as a triangle mesh. We will call this the *base mesh*. The mesostructure contains higher frequency detail, like bumps on the surface of the model, and it is specified using a *displacement texture*. Figure 2-1 shows an example of a simple side of a mesh (a quad), the texture used as a displacement map, and the resulting displaced mesh.
 
-##### Figure 2-1: Triangle of the base mesh in parametric form and its coverage of the parameter space. The displacement texture map occupies the square defined between coordinates (0, 0) and (1, 1). Black corresponds to a value of 0, while white does to a value of 1.
+##### Figure 2-1: Displacing a simple quad with a noise texture produces a detailed mesh.
 
 ![Simple displacement](images/2.1_simple_displacement.png)
 
