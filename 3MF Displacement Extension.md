@@ -493,7 +493,7 @@ The \<triangle> element represents a single face of the displacement mesh. The \
 
 In addition to the attributes specified in the 3MF core specification the \<triangle> element is extended with the optional displacement map for each vertex.
 
-**did** - Specifies the displacement group ID for the triangles in the mesh, overriding the default displacement map ID in the enclosing \<triangles> element, whether specified. The "did" is ignored is no displacement maps indices are selected in triangle. The "did" MUST be specified if "d1" is specified and no "did" is specified at _triangles_ level.
+**did** - Specifies the displacement group ID for the triangle, overriding the default displacement map ID in the enclosing \<triangles> element, whether specified. The "did" is ignored if no displacement maps indices are selected in triangle. The "did" MUST be specified if "d1" is specified and no "did" is specified at _triangles_ level.
 
 **d1, d2, d3** - Specify the indices to the displacement maps in the selected displacement group for the vertices "v1", "v2" and "v3", respectively.
 
