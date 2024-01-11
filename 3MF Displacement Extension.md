@@ -13,7 +13,7 @@
 
 
 
-| **Version** | 0.8.0 |
+| **Version** | 0.8.1 |
 | --- | --- |
 | **Status** | Draft |
 
