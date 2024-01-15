@@ -367,7 +367,12 @@ A \<disp2dgroup> element acts as a container for texture coordinate properties. 
 
 The displacement map (dm), at barycentric coordinates uv, is computed by:
 
-	dm(u,v) = texture(u,v) * height + offset
+$$ dm(u,v) =  \begin{cases}
+    texture(u,v) * height + offset & \text{$(\mathtt{TILE}_i \neq \mathtt{NONE}$ or $0 \leq i < L$) and} \\
+     & \text{$(\mathtt{TILE}_j \neq \mathtt{NONE}$ or $0 \leq j < L$)} \\
+    0 & \mathrm{otherwise}\\
+\end{cases}
+$$
 
 where the texture value is in the range [0, 1], and the displacement map is applied in the model unit resolution, as specified in the 3MF core specification ([3.4 Model](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#34-model)).
 
