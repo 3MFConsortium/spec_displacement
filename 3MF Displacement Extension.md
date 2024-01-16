@@ -374,7 +374,7 @@ $$ dm(u,v) =  \begin{cases}
 \end{cases}
 $$
 
-where the texture value is in the range [0, 1], and the _height_ and _offset_ atributes are interpreted in the model unit resolution, as specified in the 3MF core specification ([3.4 Model](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#34-model)).
+where the texture value is in the range [0, 1], and the displacement map is defined in the model unit resolution, as specified in the 3MF core specification ([3.4 Model](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#34-model)).
 
 A positive displacement map specifies an embossing, and a negative displacement map specifies a debossing of the original mesh.
 
