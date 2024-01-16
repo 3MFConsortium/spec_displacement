@@ -365,18 +365,18 @@ A \<disp2dgroup> element acts as a container for texture coordinate properties. 
 
 **offset** - The offset attribute defines the displacement offset in the model units. The offset default value is 0.
 
-The displacement map (dm), at barycentric coordinates uv, is computed by:
+The displacement map (dm), at barycentric coordinates (u, v), is computed depending on the tiling specified in [3.1 Displacement2D](#31-displacement2d) and the (u,v) coodinates specified in [3.3.1 Disp2DCoords](#331-disp2dcoords) by:
 
 $$ dm(u,v) =  \begin{cases}
-    texture(u,v) * height + offset & \text{$(\mathtt{TILE}_i \neq \mathtt{NONE}$ or $0 \leq i < L$) and} \\
-     & \text{$(\mathtt{TILE}_j \neq \mathtt{NONE}$ or $0 \leq j < L$)} \\
+    texture(u,v) * height + offset & \text{$(\mathtt{TILE}_u \neq \mathtt{NONE}$ or $0 \leq u \leq 1$) and} \\
+     & \text{$(\mathtt{TILE}_v \neq \mathtt{NONE}$ or $0 \leq v \leq 1$)} \\
     0 & \mathrm{otherwise}\\
 \end{cases}
 $$
 
 where the texture value is in the range [0, 1], and the displacement map is applied in the model unit resolution, as specified in the 3MF core specification ([3.4 Model](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#34-model)).
 
-A positive displacement map specifies an embossing and a negative displacement map specifies a debossing of the original mesh.
+A positive displacement map specifies an embossing, and a negative displacement map specifies a debossing of the original mesh.
 
 To avoid integer overflows, a texture coordinate group MUST contain less than 2^31 disp2dcoords.
 
@@ -395,7 +395,7 @@ Element **\<disp2dcoords>**
 
 The \<disp2dcoords> element maps a vertex of a triangle to a position in image space (U, V coordinates). Displacement mapping allows texture images to  produce a new geometry by the displacement of the surface triangle.
 
-**u, v** - The U, V coordinates within the texture image. The lower left corner of the texture is the u, v coordinate (0,0), and the upper right coordinate is (1,1). The UV values are not restricted to this range. When the UV coordinates exceed the [0,1] range, the tilestyleu and tilestylev MUST be applied according to the tiling specified in [3.1 Displacement2D](#31-displacement2d).
+**u, v** - The u, v coordinates within the texture image. The lower left corner of the texture is the u, v coordinate (0,0), and the upper right coordinate is (1,1). The UV values are not restricted to this range. When the UV coordinates exceed the [0,1] range, the tilestyleu and tilestylev MUST be applied according to the tiling specified in [3.1 Displacement2D](#31-displacement2d).
 
 **n** - The index to the normalized displacement vector, defined by the \<normvector> elements in the selected \<normvectorgroup>.
 
