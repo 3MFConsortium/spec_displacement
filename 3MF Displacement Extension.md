@@ -350,7 +350,7 @@ Element **\<disp2dgroup>**
 | dispid | **ST\_ResourceID** | required |   | ID of the Displacement map used in this group |
 | nid | **ST\_ResourceID** | required | | ID of the normalized vector group used in this group |
 | height | **ST\_Number** | required |   | Amplitude of the mapped values in the texture |
-| offset | **ST\_Number** |  |  0 | Offset to the displacement map amplitude |
+| offset | **ST\_Number** |  |  0 | Offset to the displacement map |
 | @anyAttribute | | | | |
 
 A \<disp2dgroup> element acts as a container for texture coordinate properties. The order of these elements forms an implicit 0-based index that is referenced by other elements, such as the \<object> and \<triangle> elements. It also specifies which image to use, via dispid. The referenced \<displacement2d> elements are described above in [2.1 Displacement2D](#21-displacement2d).
