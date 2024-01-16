@@ -349,7 +349,7 @@ Element **\<disp2dgroup>**
 | id | **ST\_ResourceID** | required |   | ResourceID of this Disp2dGroup resource |
 | dispid | **ST\_ResourceID** | required |   | ID of the Displacement map used in this group |
 | nid | **ST\_ResourceID** | required | | ID of the normalized vector group used in this group |
-| height | **ST\_Number** | required |   | The amplitude of the mapped values in the texture |
+| height | **ST\_Number** | required |   | Amplitude of the mapped values in the texture |
 | offset | **ST\_Number** |  |  0 | Offset to the displacement map amplitude |
 | @anyAttribute | | | | |
 
@@ -374,7 +374,7 @@ $$ dm(u,v) =  \begin{cases}
 \end{cases}
 $$
 
-where the texture value is in the range [0, 1], and the displacement map is applied in the model unit resolution, as specified in the 3MF core specification ([3.4 Model](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#34-model)).
+where the texture value is in the range [0, 1], and the _height_ and _offset_ atributes are interpreted in the model unit resolution, as specified in the 3MF core specification ([3.4 Model](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#34-model)).
 
 A positive displacement map specifies an embossing, and a negative displacement map specifies a debossing of the original mesh.
 
