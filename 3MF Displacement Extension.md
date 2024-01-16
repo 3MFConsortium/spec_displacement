@@ -365,7 +365,7 @@ A \<disp2dgroup> element acts as a container for texture coordinate properties. 
 
 **offset** - The offset attribute defines the displacement offset in the model units. The offset default value is 0.
 
-The displacement map (dm), at barycentric coordinates (u, v), is computed depending on the tiling specified in [3.1 Displacement2D](#31-displacement2d) and the (u,v) coodinates specified in [3.3.1 Disp2DCoords](#331-disp2dcoords) by:
+The displacement map (dm), at coordinates (u, v), is computed depending on the tiling specified in [3.1 Displacement2D](#31-displacement2d) and the (u,v) coodinates specified in [3.3.1 Disp2DCoords](#331-disp2dcoords) by:
 
 $$ dm(u,v) =  \begin{cases}
     texture(u,v) * height + offset & \text{$(\mathtt{TILE}_u \neq \mathtt{NONE}$ or $0 \leq u \leq 1$) and} \\
