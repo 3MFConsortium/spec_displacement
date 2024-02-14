@@ -152,7 +152,7 @@ $$ d(u,v) =  \begin{cases}
 \end{cases}
 $$
 
-where $texture(u, v)$ denotes the value in the range [0, 1] returned by sampling the displacement texture map at parametric coordinates $(u, v)$ and the displacement is defined in the model unit resolution, as specified in the 3MF core specification ([3.4 Model](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#34-model)).
+where $texture(u, v)$ denotes the value in the range [0, 1] returned by sampling the displacement texture map at parametric coordinates $(u, v)$ and the displacement is defined in the model unit resolution, as specified in the 3MF core specification ([3.4 Model](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#34-model)). The tile style NONE specifies that there is no displacement outside the [0, 1] coordinates range for non zero offsets.
 
 Notice that, as $d(u, v)$ is used to scale the displacement vector $n(u, v)$, the final size of the displacement at each point depends on $texture(u, v)$ and *height*. Figure 2-4 shows the result of choosing different values for these two parameters. The offset parameter is particularly useful to change what value of the texture produces no displacement. The *height* value may take negative values to produce displacement in the direction opposite to the specified displacement vectors.
 
