@@ -294,6 +294,8 @@ A displacement texture resource provides information about texture image data, f
 
 **contenttype** - The only supported content types are JPEG and PNG, as described in the 3MF core spec under the [6.1. Thumbnail](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#61-thumbnail) section.
 
+>**Note:** It is recommended to use PNG lossless images when containing flat areas. The lossy nature of JPEG would produce there some noise in the printing slicing.
+
 **channel** - The channel attribute selects which of the R, G, B or A channels defines the displacement texture. For monochromatic images with a single grayscale channel, the R, G or B channels are equivalent to the grayscale value.
 
 If the image does not contain an alpha channel, producers SHOULD NOT select it. Otherwise, it would produce a flat displacement value of 1 across the texture image.
