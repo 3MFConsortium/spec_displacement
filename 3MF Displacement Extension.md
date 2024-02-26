@@ -68,7 +68,7 @@ This extension MUST be used only with Core specification 1.x.
 
 See [the 3MF Core Specification conventions](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#document-conventions).
 
-In this extension specification, as an example, the prefix "d" maps to the xml-namespace "http://schemas.microsoft.com/3dmanufacturing/displacement/2023/10". See Appendix [C.3 Namespaces](#c3-namespaces).
+In this extension specification, as an example, the prefix "d" maps to the xml-namespace "http://schemas.3mf.io/3dmanufacturing/displacement/2024/02". See Appendix [C.3 Namespaces](#c3-namespaces).
 
 ## Language Notes
 
@@ -278,23 +278,20 @@ Element **\<displacement2d>**
 | Name   | Type   | Use   | Default   | Annotation |
 | --- | --- | --- | --- | --- |
 | id | **ST\_ResourceID** | required |   | ResourceID of this displacement resource. |
-| path | **ST\_UriReference** | required |   | Path to the displacement image file. |
-| contenttype | **ST\_ContentType** | required |   | Content type of the texture resource. PNG or JPEG allowed. |
+| path | **ST\_UriReference** | required |   | Path to the displacement image PNG file. |
 | channel | **ST\_ChannelName** |  | G | Specifies which channel to reference in the displacement texture. Valid values are R, G, B. Ignored for monochromatic images. |
 | tilestyleu | **ST_TileStyle** |  | wrap | Specifies how tiling should occur in the u axis in order to fill the overall requested area. Valid values are wrap, mirror, clamp, none. |
 | tilestylev | **ST_TileStyle** |  | wrap | Specifies how tiling should occur in the v axis in order to fill the overall requested area. Valid values are wrap, mirror, clamp, none. |
 | filter | **ST_Filter** |  | auto | Specifies the texture filter to apply when scaling the source texture.  Allowed values are “auto”, “linear”, “nearest”. |
 | @anyAttribute | | | | |
 
-A displacement texture resource provides information about texture image data, found via the provided path reference, which MUST also be the target of a 3D Texture relationship from the 3D Model part. 
+A displacement texture resource provides the texture image data from the PNG file, found via the provided path reference, which MUST also be the target of a 3D Texture relationship from the 3D Model part. 
 
 **id** - Specifies a unique identifier for this displacement resource. 
 
-**path** - Specifies the path to the displacement image file.
+**path** - Specifies the path to the displacement image PNG file.
 
-**contenttype** - The only supported content types are JPEG and PNG, as described in the 3MF core spec under the [6.1. Thumbnail](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#61-thumbnail) section.
-
->**Note:** It is recommended to use PNG lossless images when containing flat areas. The lossy nature of JPEG would produce there some noise in the printing slicing.
+>**Note:** It is recommended to use PNG lossless images when containing flat areas, for example text labelling. A lossy compression MIGHT produce some noise in the printing slicing.
 
 **channel** - The channel attribute selects which of the R, G, B or A channels defines the displacement texture. For monochromatic images with a single grayscale channel, the R, G or B channels are equivalent to the grayscale value.
 
@@ -556,11 +553,10 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?> 
-<xs:schema xmlns="http://schemas.microsoft.com/3
-anufacturing/displacement/2023/10"
+<xs:schema xmlns="http://schemas.3mf.io/3dmanufacturing/displacement/2024/02"
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	xmlns:core="http://schemas.microsoft.com/3dmanufacturing/core/2015/02"
-	targetNamespace="http://schemas.microsoft.com/3dmanufacturing/displacement/2023/10"
+	targetNamespace="http://schemas.3mf.io/3dmanufacturing/displacement/2024/02"
 	elementFormDefault="unqualified" attributeFormDefault="unqualified" blockDefault="#all">
 	<xs:import namespace="http://www.w3.org/XML/1998/namespace"
 		schemaLocation="http://www.w3.org/2001/xml.xsd"/>
@@ -594,7 +590,6 @@ anufacturing/displacement/2023/10"
 	<xs:complexType name="CT_Displacement2D">
 		<xs:attribute name="id" type="ST_ResourceID" use="required"/>
 		<xs:attribute name="path" type="ST_UriReference" use="required"/>
-		<xs:attribute name="contenttype" type="ST_ContentType" use="required"/>
 		<xs:attribute name="channel" type="ST_ChannelName" default="G"/>
 		<xs:attribute name="tilestyleu" type="ST_TileStyle" default="wrap"/>
 		<xs:attribute name="tilestylev" type="ST_TileStyle" default="wrap"/>
@@ -692,12 +687,6 @@ anufacturing/displacement/2023/10"
 	</xs:complexType>
 
 	<!-- Simple Types -->
-	<xs:simpleType name="ST_ContentType">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="image/jpeg"/>
-			<xs:enumeration value="image/png"/>
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:simpleType name="ST_ChannelName">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="R"/>
@@ -772,7 +761,7 @@ anufacturing/displacement/2023/10"
 
 | | |
 | --- | --- |
-|Displacement | [http://schemas.microsoft.com/3dmanufacturing/displacement/2023/10](http://schemas.microsoft.com/3dmanufacturing/displacement/2023/10) |
+|Displacement | [http://schemas.3mf.io/3dmanufacturing/displacement/2024/02](http://schemas.3mf.io/3dmanufacturing/displacement/2024/02) |
 
 # Appendix D: Example file
 
@@ -780,10 +769,10 @@ anufacturing/displacement/2023/10"
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <model xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02"
-  xmlns:d="http://schemas.microsoft.com/3dmanufacturing/displacement/2023/10"
+  xmlns:d="http://schemas.3mf.io/3dmanufacturing/displacement/2024/02"
   unit="millimeter" xml:lang="en-US">
   <resources>
-    <d:displacement2d id="10" path="/3D/Textures/label_mono.png" contenttype="image/png"/>
+    <d:displacement2d id="10" path="/3D/Textures/label_mono.png"/>
     <d:normvectorgroup id="24">
       <d:normvector x="-0.704662" y="-0.704662" z="-0.0830916"/>
       <d:normvector x="0.704672" y="-0.704644" z="-0.0831468"/>
