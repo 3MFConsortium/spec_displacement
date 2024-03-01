@@ -68,7 +68,7 @@ This extension MUST be used only with Core specification 1.x.
 
 See [the 3MF Core Specification conventions](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#document-conventions).
 
-In this extension specification, as an example, the prefix "d" maps to the xml-namespace "http://schemas.3mf.io/3dmanufacturing/displacement/2024/02". See Appendix [C.3 Namespaces](#c3-namespaces).
+In this extension specification, as an example, the prefix "d" maps to the xml-namespace "http://schemas.3mf.io/3dmanufacturing/displacement/2023/10". See Appendix [C.3 Namespaces](#c3-namespaces).
 
 ## Language Notes
 
@@ -553,10 +553,10 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?> 
-<xs:schema xmlns="http://schemas.3mf.io/3dmanufacturing/displacement/2024/02"
+<xs:schema xmlns="http://schemas.3mf.io/3dmanufacturing/displacement/2023/10"
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	xmlns:core="http://schemas.microsoft.com/3dmanufacturing/core/2015/02"
-	targetNamespace="http://schemas.3mf.io/3dmanufacturing/displacement/2024/02"
+	targetNamespace="http://schemas.3mf.io/3dmanufacturing/displacement/2023/10"
 	elementFormDefault="unqualified" attributeFormDefault="unqualified" blockDefault="#all">
 	<xs:import namespace="http://www.w3.org/XML/1998/namespace"
 		schemaLocation="http://www.w3.org/2001/xml.xsd"/>
@@ -761,7 +761,7 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 
 | | |
 | --- | --- |
-|Displacement | [http://schemas.3mf.io/3dmanufacturing/displacement/2024/02](http://schemas.3mf.io/3dmanufacturing/displacement/2024/02) |
+|Displacement | http://schemas.3mf.io/3dmanufacturing/displacement/2023/10](http://schemas.3mf.io/3dmanufacturing/displacement/2023/10) |
 
 # Appendix D: Example file
 
@@ -769,7 +769,7 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <model xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02"
-  xmlns:d="http://schemas.3mf.io/3dmanufacturing/displacement/2024/02"
+  xmlns:d="http://schemas.3mf.io/3dmanufacturing/displacement/2023/10"
   unit="millimeter" xml:lang="en-US">
   <resources>
     <d:displacement2d id="10" path="/3D/Textures/label_mono.png"/>
