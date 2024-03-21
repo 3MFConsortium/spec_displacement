@@ -15,7 +15,7 @@
 
 | **Version** | 0.8.2 |
 | --- | --- |
-| **Status** | Draft |
+| **Status** | Pre-approved |
 
 ## Disclaimer
 
