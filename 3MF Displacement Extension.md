@@ -13,9 +13,9 @@
 
 
 
-| **Version** | 0.8.0 |
+| **Version** | 0.8.2 |
 | --- | --- |
-| **Status** | Draft |
+| **Status** | Pre-approved |
 
 ## Disclaimer
 
@@ -68,7 +68,7 @@ This extension MUST be used only with Core specification 1.x.
 
 See [the 3MF Core Specification conventions](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#document-conventions).
 
-In this extension specification, as an example, the prefix "d" maps to the xml-namespace "http://schemas.microsoft.com/3dmanufacturing/displacement/2023/10". See Appendix [C.3 Namespaces](#c3-namespaces).
+In this extension specification, as an example, the prefix "d" maps to the xml-namespace "http://schemas.3mf.io/3dmanufacturing/displacement/2023/10". See Appendix [C.3 Namespaces](#c3-namespaces).
 
 ## Language Notes
 
@@ -127,15 +127,15 @@ $$
     \end{split}
 $$
 
-Specifying the triangle in this manner connects the position of any 3D point on it to a position in the corresponding 2D parameter space. If the displacement texture is then associated to the square defined between coordinates $(0, 0)$ and $(1, 1)$ in parameter space, a map between every point $p(u, v)$ on *T* and a value $dm(u, v)$ of the displacement texture is established. Figure 2-2 shows a triangle in 3D space, the texture coordinates of its vertices, and how the triangle is mapped to the parameter space. We will say that the coordinates $(u_1, v_1), (u_2, v_2), (u_3, v_3)$ are the displacement map texture coordinates of the vertices $p_1, p_2, p_3$ of T. Here, we assume that the displacement map texture $dm(u, v)$ returns values between zero and one.
+Specifying the triangle in this manner connects the position of any 3D point on it to a position in the corresponding 2D parameter space. If the displacement texture is then associated to the square defined between coordinates $(0, 0)$ and $(1, 1)$ in parameter space, a map between every point $p(u, v)$ on *T* and a value $d(u, v)$ of the displacement texture is established. Figure 2-2 shows a triangle in 3D space, the texture coordinates of its vertices, and how the triangle is mapped to the parameter space. We will say that the coordinates $(u_1, v_1), (u_2, v_2), (u_3, v_3)$ are the displacement map texture coordinates of the vertices $p_1, p_2, p_3$ of T. Here, we assume that the displacement map texture $d(u, v)$ returns values between zero and one.
 
-##### Figure 2-2: Triangle of the base mesh in parametric form and its coverage of the parameter space. The displacement texture map occupies the square defined between coordinates (0, 0) and (1, 1). Black corresponds to a value of 0, while white does to a value of 1.
+##### Figure 2-2: Triangle of the base mesh in parametric form and its coverage of the parameter space. The displacement texture map (dm) occupies the square defined between coordinates (0, 0) and (1, 1). Black corresponds to a value of 0, while white does to a value of 1.
 
 ![Triangle map](images/2.2_triangle_map.png)
 
 Denote as $n(u, v)$ the displacement vectors associated to each point of triangle *T*, and $f(u, v)$ as an associated scale factor. This factor will scale the effect of the displacement, so that its effect can be reduced at certain vertices. Then, the geometry $\tilde{p}$(u, v) of triangle *T* after displacement may be expressed as the sum of the base mesh and the displacement as:
 
-$$ \tilde{p}(u, v) = p(u, v) + dm(u, v) \cdot f(u, v) \cdot n(u, v) $$
+$$ \tilde{p}(u, v) = p(u, v) + d(u, v) \cdot f(u, v) \cdot n(u, v) $$
 
 Figure 3 shows a triangle in the mesh is uv-mapped to a displacement texture:
 
@@ -143,11 +143,20 @@ Figure 3 shows a triangle in the mesh is uv-mapped to a displacement texture:
 
 ![Triangle map](images/2.3_displaced_triangle.png)
 
-Then, to let the displacement values $dm(u, v)$ move in a specific range, *height* and *offset* are introduced. Sampling the displacement texture map produces values in the range [0, 1]. These are scaled using the formula:
+Then, to let the displacement values $d(u, v)$ move in a specific range, *height* and *offset* are introduced. Sampling the displacement texture map produces values in the range [0, 1]. These are scaled using the formula:
 
-$$ dm(u, v) = texture(u, v) \cdot height + offset $$
+$$ d(u,v) =  \begin{cases}
+    texture(u,v) * height + offset & \text{$(\mathtt{TILE}_u \neq \mathtt{NONE}$ or $0 \leq u \leq 1$) and} \\
+     & \text{$(\mathtt{TILE}_v \neq \mathtt{NONE}$ or $0 \leq v \leq 1$)} \\
+    0 & \mathrm{otherwise}\\
+\end{cases}
+$$
 
-where $texture(u, v)$ denotes the value returned by sampling the displacement texture map at parametric coordinates $(u, v)$. Notice that, as $dm(u, v)$ is used to scale the displacement vector $n(u, v)$, the final size of the displacement at each point depends on $texture(u, v)$ and *height*. Figure 2-4 shows the result of choosing different values for these two parameters. The offset parameter is particularly useful to change what value of the texture produces no displacement. The *height* value may take negative values to produce displacement in the direction opposite to the specified displacement vectors.
+where $texture(u, v)$ denotes the value in the range [0, 1] returned by sampling the tiled displacement texture map at parametric coordinates $(u, v)$ and the displacement is defined in the model unit resolution, as specified in the 3MF core specification ([3.4 Model](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#34-model)). The tile style NONE specifies that there is no displacement outside the [0, 1] coordinates range for non zero offsets.
+
+Notice that, as $d(u, v)$ is used to scale the displacement vector $n(u, v)$, the final size of the displacement at each point depends on $texture(u, v)$ and *height*. Figure 2-4 shows the result of choosing different values for these two parameters. The offset parameter is particularly useful to change what value of the texture produces no displacement. The *height* value may take negative values to produce displacement in the direction opposite to the specified displacement vectors.
+
+A positive displacement specifies an embossing, and a negative displacement specifies a debossing of the original mesh.
 
 ##### Figure 2-4: Scaling a displacement map. Dark blue is the base mesh. Light blue, the displaced result.
 
@@ -190,7 +199,7 @@ $$ (u, v) \longrightarrow (i_c, j_c) = \big((1-v)\cdot H-0.5, u\cdot W-0.5\big) 
 
 ![normalized vector](images/2.6_texture_coord.png)
 
-Then, if the filtering mode is *nearest*, the displacement value is $C\big(round(i_c), round(j_c)\big)$, where $C(\cdot, \cdot)$ is a function that retrieves the value from the tiled image, to be detailed below.
+Then, if the filtering mode is *nearest*, the texture value is $C\big(round(i_c), round(j_c)\big)$, where $C(\cdot, \cdot)$ is a function that retrieves the value from the tiled image, to be detailed below.
 
 If the filtering mode is *linear* instead, then let:
 
@@ -201,14 +210,14 @@ $$
     \end{array}
 $$
 
-The four closest pixels are $(i_0, j_0)$, $(i_0, j_1)$, $(i_1, j_0)$ and $(i_1, j_1)$, and the filtered displacement value can now be computed as 
+The four closest pixels are $(i_0, j_0)$, $(i_0, j_1)$, $(i_1, j_0)$ and $(i_1, j_1)$, and the filtered texture value can now be computed as 
 follows:
 
 $$
     \begin{array}{rcl}
         \lambda_i&=&i_c-\lfloor i_c\rfloor\\
         \lambda_j&=&j_c-\lfloor j_c\rfloor\\
-        dm(u,v) &=
+        texture(u,v) &=
             & C(i_0, j_0)(1-\lambda_i)(1-\lambda_j)+\\
             && C(i_0, j_1)(1-\lambda_i)\lambda_j+\\
             && C(i_1, j_0)\lambda_i(1-\lambda_j)+\\
@@ -269,21 +278,20 @@ Element **\<displacement2d>**
 | Name   | Type   | Use   | Default   | Annotation |
 | --- | --- | --- | --- | --- |
 | id | **ST\_ResourceID** | required |   | ResourceID of this displacement resource. |
-| path | **ST\_UriReference** | required |   | Path to the displacement image file. |
-| contenttype | **ST\_ContentType** | required |   | Content type of the texture resource. PNG or JPEG allowed. |
+| path | **ST\_UriReference** | required |   | Path to the displacement image PNG file. |
 | channel | **ST\_ChannelName** |  | G | Specifies which channel to reference in the displacement texture. Valid values are R, G, B. Ignored for monochromatic images. |
 | tilestyleu | **ST_TileStyle** |  | wrap | Specifies how tiling should occur in the u axis in order to fill the overall requested area. Valid values are wrap, mirror, clamp, none. |
 | tilestylev | **ST_TileStyle** |  | wrap | Specifies how tiling should occur in the v axis in order to fill the overall requested area. Valid values are wrap, mirror, clamp, none. |
 | filter | **ST_Filter** |  | auto | Specifies the texture filter to apply when scaling the source texture.  Allowed values are “auto”, “linear”, “nearest”. |
 | @anyAttribute | | | | |
 
-A displacement texture resource provides information about texture image data, found via the provided path reference, which MUST also be the target of a 3D Texture relationship from the 3D Model part. 
+A displacement texture resource provides the texture image data from the PNG file, found via the provided path reference, which MUST also be the target of a 3D Texture relationship from the 3D Model part. 
 
 **id** - Specifies a unique identifier for this displacement resource. 
 
-**path** - Specifies the path to the displacement image file.
+**path** - Specifies the path to the displacement image PNG file.
 
-**contenttype** - The only supported content types are JPEG and PNG, as described in the 3MF core spec under the [6.1. Thumbnail](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#61-thumbnail) section.
+>**Note:** It is recommended to use PNG lossless images when containing flat areas, for example text labelling. A lossy compression MIGHT produce some noise in the printing slicing.
 
 **channel** - The channel attribute selects which of the R, G, B or A channels defines the displacement texture. For monochromatic images with a single grayscale channel, the R, G or B channels are equivalent to the grayscale value.
 
@@ -331,14 +339,6 @@ The normalized vectors MUST point to the triangle's outer hemisphere of the tria
 
 Normalized displacement vectors MUST be linearly interpolated to spread the displacement map along a surface. All interpolated vectors MUST be normalized before being applied.
 
-The displacement vector specifies the direction:
-
-	displacement vector = dm(u,v) * f(u,v) * n(u,v)
-
-Which is:
-
-	displacement vector = displacement map * factor * normalized vector
-
 ## 3.3 Disp2DGroup
 Element **\<disp2dgroup>**
 
@@ -349,8 +349,8 @@ Element **\<disp2dgroup>**
 | id | **ST\_ResourceID** | required |   | ResourceID of this Disp2dGroup resource |
 | dispid | **ST\_ResourceID** | required |   | ID of the Displacement map used in this group |
 | nid | **ST\_ResourceID** | required | | ID of the normalized vector group used in this group |
-| height | **ST\_Number** | required |   | The amplitude of the mapped values in the texture |
-| offset | **ST\_Number** |  |  0 | Offset to the displacement map amplitude |
+| height | **ST\_Number** | required |   | Amplitude of the mapped values in the texture |
+| offset | **ST\_Number** |  |  0 | Offset to the displacement map |
 | @anyAttribute | | | | |
 
 A \<disp2dgroup> element acts as a container for texture coordinate properties. The order of these elements forms an implicit 0-based index that is referenced by other elements, such as the \<object> and \<triangle> elements. It also specifies which image to use, via dispid. The referenced \<displacement2d> elements are described above in [2.1 Displacement2D](#21-displacement2d).
@@ -364,14 +364,6 @@ A \<disp2dgroup> element acts as a container for texture coordinate properties. 
 **height** - The height attribute defines the displacement amplitude in the model units for the maximum texture value range.
 
 **offset** - The offset attribute defines the displacement offset in the model units. The offset default value is 0.
-
-The displacement map (dm), at barycentric coordinates u, v,is computed by:
-
-	dm(u,v) = texture(u,v) * height + offset
-
-where the texture value is in the range [0, 1], and the displacement map is applied in the model unit resolution, as specified in the 3MF core specification ([3.4 Model](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#34-model)).
-
-A positive displacement map specifies an embossing and a negative displacement map specifies a debossing of the original mesh.
 
 To avoid integer overflows, a texture coordinate group MUST contain less than 2^31 disp2dcoords.
 
@@ -390,15 +382,11 @@ Element **\<disp2dcoords>**
 
 The \<disp2dcoords> element maps a vertex of a triangle to a position in image space (U, V coordinates). Displacement mapping allows texture images to  produce a new geometry by the displacement of the surface triangle.
 
-**u, v** - The U, V coordinates within the texture image. The lower left corner of the texture is the u, v coordinate (0,0), and the upper right coordinate is (1,1). The UV values are not restricted to this range. When the UV coordinates exceed the [0,1] range, the tilestyleu and tilestylev MUST be applied according to the tiling specified in [3.1 Displacement2D](#31-displacement2d).
+**u, v** - The u, v coordinates within the texture image. The lower left corner of the texture is the u, v coordinate (0,0), and the upper right coordinate is (1,1). The UV values are not restricted to this range. When the UV coordinates exceed the [0,1] range, the tilestyleu and tilestylev MUST be applied according to the tiling specified in [3.1 Displacement2D](#31-displacement2d).
 
 **n** - The index to the normalized displacement vector, defined by the \<normvector> elements in the selected \<normvectorgroup>.
 
-**f** - The optional displacement factor applied to the texture(u,v) value, in order to modulate the displacement vector across a triangle.
-
-	p'(u, v) = p(u, v) + dm(u, v) · f(u, v) · n(u, v)
-
->**Note:** the *f* attribute allow to soften the displacement at the boundaries of the displaced surface.
+**f** - The optional displacement factor applied to the texture(u,v) value, in order to modulate the displacement vector across a triangle. The *f* attribute MAY allow to soften the displacement at the boundaries of the displaced surface.
 
 # Chapter 4. Object
 
@@ -497,7 +485,7 @@ In addition to the attributes specified in the 3MF core specification the \<tria
 
 **d1, d2, d3** - Specify the indices to the displacement maps in the selected displacement group for the vertices "v1", "v2" and "v3", respectively.
 
-The displacement map applied to each vertex (d1, d2, d3) allows displacement to be defined across the triangle by mapping to the displacement texture and the displacement vector.
+The displacement applied to each vertex (d1, d2, d3) allows displacement to be defined across the triangle by mapping to the displacement texture and the displacement vector.
 
 The displacement group is specified by the "did" attribute. Since this is applied to the whole triangle, it implicitly forces the three displacement map indices to belong to the same group. If "d1" is specified then the "did" attribute MUST be specified, either in the triangle or in the enclosing _triangles_. If "d2" or "d3" are unspecified then "d1" is used for the entire triangle. If "d1" is unspecified then no displacement map is applied to the triangle, and the "did" is ignored.
 
@@ -565,10 +553,10 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?> 
-<xs:schema xmlns="http://schemas.microsoft.com/3dmanufacturing/displacement/2023/10"
+<xs:schema xmlns="http://schemas.3mf.io/3dmanufacturing/displacement/2023/10"
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	xmlns:core="http://schemas.microsoft.com/3dmanufacturing/core/2015/02"
-	targetNamespace="http://schemas.microsoft.com/3dmanufacturing/displacement/2023/10"
+	targetNamespace="http://schemas.3mf.io/3dmanufacturing/displacement/2023/10"
 	elementFormDefault="unqualified" attributeFormDefault="unqualified" blockDefault="#all">
 	<xs:import namespace="http://www.w3.org/XML/1998/namespace"
 		schemaLocation="http://www.w3.org/2001/xml.xsd"/>
@@ -602,7 +590,6 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 	<xs:complexType name="CT_Displacement2D">
 		<xs:attribute name="id" type="ST_ResourceID" use="required"/>
 		<xs:attribute name="path" type="ST_UriReference" use="required"/>
-		<xs:attribute name="contenttype" type="ST_ContentType" use="required"/>
 		<xs:attribute name="channel" type="ST_ChannelName" default="G"/>
 		<xs:attribute name="tilestyleu" type="ST_TileStyle" default="wrap"/>
 		<xs:attribute name="tilestylev" type="ST_TileStyle" default="wrap"/>
@@ -700,12 +687,6 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 	</xs:complexType>
 
 	<!-- Simple Types -->
-	<xs:simpleType name="ST_ContentType">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="image/jpeg"/>
-			<xs:enumeration value="image/png"/>
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:simpleType name="ST_ChannelName">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="R"/>
@@ -780,7 +761,7 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 
 | | |
 | --- | --- |
-|Displacement | [http://schemas.microsoft.com/3dmanufacturing/displacement/2023/10](http://schemas.microsoft.com/3dmanufacturing/displacement/2023/10) |
+|Displacement | http://schemas.3mf.io/3dmanufacturing/displacement/2023/10](http://schemas.3mf.io/3dmanufacturing/displacement/2023/10) |
 
 # Appendix D: Example file
 
@@ -788,10 +769,10 @@ See [the 3MF Core Specification glossary](https://github.com/3MFConsortium/spec_
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <model xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02"
-  xmlns:d="http://schemas.microsoft.com/3dmanufacturing/displacement/2023/10"
+  xmlns:d="http://schemas.3mf.io/3dmanufacturing/displacement/2023/10"
   unit="millimeter" xml:lang="en-US">
   <resources>
-    <d:displacement2d id="10" path="/3D/Textures/label_mono.png" contenttype="image/png"/>
+    <d:displacement2d id="10" path="/3D/Textures/label_mono.png"/>
     <d:normvectorgroup id="24">
       <d:normvector x="-0.704662" y="-0.704662" z="-0.0830916"/>
       <d:normvector x="0.704672" y="-0.704644" z="-0.0831468"/>
