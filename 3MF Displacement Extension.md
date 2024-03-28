@@ -117,7 +117,7 @@ Displacement maps allow the producer to specify the macrostructure and mesostruc
 
 ![Simple displacement](images/2.1_simple_displacement.png)
 
-Let us denote a triangle *T* of the base mesh in parametric form $p(u, v)$, such that its three vertices $p_1, p_2, p_3$ have corresponding parametric coordinates $(u_1, v_1), (u_2, v_2), (u_3, v_3)$. Thus:
+Let us denote a triangle *T* of the base mesh in parametric form _p(u, v)_, such that its three vertices _p<sub>1</sub>, p<sub>2</sub>, p<sub>3</sub>_ have corresponding parametric coordinates _(u<sub>1</sub>, v<sub>1</sub>), (u<sub>2</sub>, v<sub>2</sub>), (u_3, v_3)_. Thus:
 
 $$
     \begin{split}
