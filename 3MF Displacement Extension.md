@@ -117,25 +117,19 @@ Displacement maps allow the producer to specify the macrostructure and mesostruc
 
 ![Simple displacement](images/2.1_simple_displacement.png)
 
-Let us denote a triangle *T* of the base mesh in parametric form $p(u, v)$, such that its three vertices $p_1, p_2, p_3$ have corresponding parametric coordinates $(u_1, v_1), (u_2, v_2), (u_3, v_3)$. Thus:
+Let us denote a triangle *T* of the base mesh in parametric form _p(u, v)_, such that its three vertices _p<sub>1</sub>, p<sub>2</sub>, p<sub>3</sub>_ have corresponding parametric coordinates _(u<sub>1</sub>, v<sub>1</sub>), (u<sub>2</sub>, v<sub>2</sub>), (u<sub>3</sub>, v<sub>3</sub>)_. Thus:
 
-$$
-    \begin{split}
-        p_1 = p(u_1, v_1) \\
-        p_2 = p(u_2, v_2) \\
-        p_3 = p(u_3, v_3)
-    \end{split}
-$$
+<p align="center"> <img src="images/fml_01.png"> </p>
 
-Specifying the triangle in this manner connects the position of any 3D point on it to a position in the corresponding 2D parameter space. If the displacement texture is then associated to the square defined between coordinates $(0, 0)$ and $(1, 1)$ in parameter space, a map between every point $p(u, v)$ on *T* and a value $d(u, v)$ of the displacement texture is established. Figure 2-2 shows a triangle in 3D space, the texture coordinates of its vertices, and how the triangle is mapped to the parameter space. We will say that the coordinates $(u_1, v_1), (u_2, v_2), (u_3, v_3)$ are the displacement map texture coordinates of the vertices $p_1, p_2, p_3$ of T. Here, we assume that the displacement map texture $d(u, v)$ returns values between zero and one.
+Specifying the triangle in this manner connects the position of any 3D point on it to a position in the corresponding 2D parameter space. If the displacement texture is then associated to the square defined between coordinates _(0, 0)_ and _(1, 1)_ in parameter space, a map between every point _p(u, v)_ on *T* and a value _d(u, v)_ of the displacement texture is established. Figure 2-2 shows a triangle in 3D space, the texture coordinates of its vertices, and how the triangle is mapped to the parameter space. We will say that the coordinates _(u<sub>1</sub>, v<sub>1</sub>), (u<sub>2</sub>, v<sub>2</sub>), (u<sub>3</sub>, v<sub>3</sub>)_ are the displacement map texture coordinates of the vertices _p<sub>1</sub>, p<sub>2</sub>, p<sub>3</sub>_ of _T_. Here, we assume that the displacement map texture _d(u, v)_ returns values between zero and one.
 
-##### Figure 2-2: Triangle of the base mesh in parametric form and its coverage of the parameter space. The displacement texture map (dm) occupies the square defined between coordinates (0, 0) and (1, 1). Black corresponds to a value of 0, while white does to a value of 1.
+##### Figure 2-2: Triangle of the base mesh in parametric form and its coverage of the parameter space. The displacement texture map (dm) occupies the square defined between coordinates _(0, 0)_ and _(1, 1)_. Black corresponds to a value of 0, while white does to a value of 1.
 
 ![Triangle map](images/2.2_triangle_map.png)
 
-Denote as $n(u, v)$ the displacement vectors associated to each point of triangle *T*, and $f(u, v)$ as an associated scale factor. This factor will scale the effect of the displacement, so that its effect can be reduced at certain vertices. Then, the geometry $\tilde{p}$(u, v) of triangle *T* after displacement may be expressed as the sum of the base mesh and the displacement as:
+Denote as _n(u, v)_ the displacement vectors associated to each point of triangle *T*, and _f(u, v)_ as an associated scale factor. This factor will scale the effect of the displacement, so that its effect can be reduced at certain vertices. Then, the geometry _p&#x0303;(u, v)_ of triangle _T_ after displacement may be expressed as the sum of the base mesh and the displacement as:
 
-$$ \tilde{p}(u, v) = p(u, v) + d(u, v) \cdot f(u, v) \cdot n(u, v) $$
+<p align="center"> <img src="images/fml_02.png"> </p>
 
 Figure 3 shows a triangle in the mesh is uv-mapped to a displacement texture:
 
@@ -143,18 +137,13 @@ Figure 3 shows a triangle in the mesh is uv-mapped to a displacement texture:
 
 ![Triangle map](images/2.3_displaced_triangle.png)
 
-Then, to let the displacement values $d(u, v)$ move in a specific range, *height* and *offset* are introduced. Sampling the displacement texture map produces values in the range [0, 1]. These are scaled using the formula:
+Then, to let the displacement values _d(u, v)_ move in a specific range, *height* and *offset* are introduced. Sampling the displacement texture map produces values in the range [0, 1]. These are scaled using the formula:
 
-$$ d(u,v) =  \begin{cases}
-    texture(u,v) * height + offset & \text{$(\mathtt{TILE}_u \neq \mathtt{NONE}$ or $0 \leq u \leq 1$) and} \\
-     & \text{$(\mathtt{TILE}_v \neq \mathtt{NONE}$ or $0 \leq v \leq 1$)} \\
-    0 & \mathrm{otherwise}\\
-\end{cases}
-$$
+<p align="center"> <img src="images/fml_03.png"> </p>
 
-where $texture(u, v)$ denotes the value in the range [0, 1] returned by sampling the tiled displacement texture map at parametric coordinates $(u, v)$ and the displacement is defined in the model unit resolution, as specified in the 3MF core specification ([3.4 Model](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#34-model)). The tile style NONE specifies that there is no displacement outside the [0, 1] coordinates range for non zero offsets.
+where _texture(u, v)_ denotes the value in the range [0, 1] returned by sampling the tiled displacement texture map at parametric coordinates _(u, v)_ and the displacement is defined in the model unit resolution, as specified in the 3MF core specification ([3.4 Model](https://github.com/3MFConsortium/spec_core/blob/1.3.0/3MF%20Core%20Specification.md#34-model)). The tile style NONE specifies that there is no displacement outside the [0, 1] coordinates range for non zero offsets.
 
-Notice that, as $d(u, v)$ is used to scale the displacement vector $n(u, v)$, the final size of the displacement at each point depends on $texture(u, v)$ and *height*. Figure 2-4 shows the result of choosing different values for these two parameters. The offset parameter is particularly useful to change what value of the texture produces no displacement. The *height* value may take negative values to produce displacement in the direction opposite to the specified displacement vectors.
+Notice that, as _d(u, v)_ is used to scale the displacement vector _n(u, v)_, the final size of the displacement at each point depends on _texture(u, v)_ and *height*. Figure 2-4 shows the result of choosing different values for these two parameters. The offset parameter is particularly useful to change what value of the texture produces no displacement. The *height* value may take negative values to produce displacement in the direction opposite to the specified displacement vectors.
 
 A positive displacement specifies an embossing, and a negative displacement specifies a debossing of the original mesh.
 
@@ -165,65 +154,50 @@ A positive displacement specifies an embossing, and a negative displacement spec
 | Base quad | Offset = 0 and height = 1 | Offset = −0.5 and height = 1 | Offset = 0 and height = 2 |
 
 Regarding the displacement vectors *n(u, v)*, we could use the normal of each triangle *T* for the displacement
-produced from *T*. Better control may be provided by assigning normalized displacement vectors $n_1, n_2, n_3$ at each
+produced from *T*. Better control may be provided by assigning normalized displacement vectors _n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>_ at each
 of its vertices and interpolating them linearly. Figure 2-5 shows this effect.
 
 ##### Figure 2-5: Being able to specify different displacement vectors per vertex enables more control.
 
 ![normalized vector](images/2.5_norm_vectors.png)
 
-Assume we want to compute the displacement vector for a point P that has barycentric coordinates $\alpha_1$, $\alpha_2$, $\alpha_3$ inside a triangle with vertices $p_1$, $p_2$ and $p_3$. Thus:
+Assume we want to compute the displacement vector for a point P that has barycentric coordinates _&alpha;<sub>1</sub>, &alpha;<sub>2</sub>, &alpha;<sub>3</sub>_ inside a triangle with vertices _p<sub>1</sub>_, _p<sub>2</sub>_ and _p<sub>3</sub>_. Thus:
 
-$$  P = \alpha_1 p_1 + \alpha_2 p_2 + \alpha_3 p_3 $$
+<p align="center"> <img src="images/fml_04.png"> </p>
 
-If the vertices have displacement texture coordinates ($u_1$, $v_1$), ($u_2$, $v_2$), ($u_3$, $v_3$), the texture coordinates of point *P* are:
+If the vertices have displacement texture coordinates (_u<sub>1</sub>_, _v<sub>1</sub>_), (_u<sub>2</sub>_, _v<sub>2</sub>_), (_u<sub>3</sub>_, _v<sub>3</sub>_), the texture coordinates of point *P* are:
 
-$$ (u, v) = (\alpha_1u_1 + \alpha_2u_2 + \alpha_3u_3, \alpha_1v_1 + \alpha_2v_2 + \alpha_3v_3) $$
+<p align="center"> <img src="images/fml_05.png"> </p>
 
-and given that the normalized displacement vectors associated to the triangle’s three vertices are $n_1$, $n_2$, $n_3$, the normalized displacement vector at *P* is:
+and given that the normalized displacement vectors associated to the triangle’s three vertices are _n<sub>1</sub>_, _n<sub>2</sub>_, _n<sub>3</sub>_, the normalized displacement vector at *P* is:
 
-$$ n(u,v) = \frac{\alpha_1 n_1 + \alpha_2 n_2 + \alpha_3 n_3}{\|\alpha_1 n_1 + \alpha_2 n_2 + \alpha_3 n_3\|} $$
+<p align="center"> <img src="images/fml_06.png"> </p>
 
-The same is done for the scale factors. They are specified at the vertices as $f_1, f_2, f_3$, and interpolated
+The same is done for the scale factors. They are specified at the vertices as _f<sub>1</sub>, f<sub>2</sub>, f<sub>3</sub>_, and interpolated
 inside a triangle using barycentric coordinates:
 
-$$ f(u,v) = \alpha_1 f_1 + \alpha_2 f_2 + \alpha_3 f_3 $$
+<p align="center"> <img src="images/fml_07.png"> </p>
 
-We also need to define what happens for texture coordinates outside the domain $[0, 1]^2$. there are several methods to deal with this case: *wrap*, *mirror*, *clamp*, and *none*. Figures 1-8 and 1-9 show how they work.
+We also need to define what happens for texture coordinates outside the domain _[0, 1]<sup>2</sup>_. there are several methods to deal with this case: *wrap*, *mirror*, *clamp*, and *none*. Figures 1-8 and 1-9 show how they work.
 
-Assume we are applying a displacement texture of $W × H$ pixels, and want to determine the value at texture coordinates $(u, v)$. We first transform $(u, v)$ to image space (see Figure 2-6):
+Assume we are applying a displacement texture of **_W x H_** pixels, and want to determine the value at texture coordinates _(u, v)_. We first transform _(u, v)_ to image space (see Figure 2-6):
 
-$$ (u, v) \longrightarrow (i_c, j_c) = \big((1-v)\cdot H-0.5, u\cdot W-0.5\big) $$
+<p align="center"> <img src="images/fml_08.png"> </p>
 
 ##### Figure 2-6: Texture coordinates need to be transformed to image space, so the corresponding texels may be accessed.
 
 ![normalized vector](images/2.6_texture_coord.png)
 
-Then, if the filtering mode is *nearest*, the texture value is $C\big(round(i_c), round(j_c)\big)$, where $C(\cdot, \cdot)$ is a function that retrieves the value from the tiled image, to be detailed below.
+Then, if the filtering mode is *nearest*, the texture value is _C(round(i<sub>c</sub>), round(j<sub>c</sub>)_, where _C(&sdot;, &sdot;)_ is a function that retrieves the value from the tiled image, to be detailed below.
 
 If the filtering mode is *linear* instead, then let:
 
-$$
-    \begin{array}{ll}
-        i_0=\lfloor i_c\rfloor;&\qquad i_1=i_0+1\\
-        j_0=\lfloor j_c\rfloor; &\qquad j_1=j_0+1\\
-    \end{array}
-$$
+<p align="center"> <img src="images/fml_09.png"> </p>
 
-The four closest pixels are $(i_0, j_0)$, $(i_0, j_1)$, $(i_1, j_0)$ and $(i_1, j_1)$, and the filtered texture value can now be computed as 
+The four closest pixels are _(i<sub>0</sub>, j<sub>0</sub>)_, _(i<sub>0</sub>, j<sub>1</sub>)_, _(i<sub>1</sub>, j<sub>0</sub>)_ and _(i<sub>1</sub>, j<sub>1</sub>)_, and the filtered texture value can now be computed as 
 follows:
 
-$$
-    \begin{array}{rcl}
-        \lambda_i&=&i_c-\lfloor i_c\rfloor\\
-        \lambda_j&=&j_c-\lfloor j_c\rfloor\\
-        texture(u,v) &=
-            & C(i_0, j_0)(1-\lambda_i)(1-\lambda_j)+\\
-            && C(i_0, j_1)(1-\lambda_i)\lambda_j+\\
-            && C(i_1, j_0)\lambda_i(1-\lambda_j)+\\
-            && C(i_1, j_1)\lambda_i\lambda_j
-    \end{array}
-$$
+<p align="center"> <img src="images/fml_10.png"> </p>
 
 The effect of the two filtering modes is presented in Figure 2-7.
 
@@ -233,36 +207,23 @@ The effect of the two filtering modes is presented in Figure 2-7.
 | :---: | :---: | :---: |
 | Simple 3×3 displacement texture | Result with filter mode *nearest* | Result with filter mode *linear* |
 
-This integer coordinates $(i, j)$ may range over $[0, 1]^2$. To retrieve the actual value then we need to map them onto an equivalent pair $(i^\prime, j^\prime)\in \\{0..H-1\\}\times \\{0..W-1 \\}$ of the same value, which is done independently on each component, using the tiling option for the corresponding direction. If L denotes the length of the image in the direction under scrutiny (*H* for *i*, and *W* for *j*), then:
+This integer coordinates _(i, j)_ may range over _[0, 1]<sup>2</sup>_. To retrieve the actual value then we need to map them onto an equivalent pair _(i&prime;, j&prime;) &isin; {0..H-1}x{0..W-1}_ of the same value, which is done independently on each component, using the tiling option for the corresponding direction. If *L* denotes the length of the image in the direction under scrutiny (*H* for *i*, and *W* for *j*), then:
 
-$$
-	\begin{array}{rcl}
-	\mathtt{CLAMP}(x, L)&=&\min\big(L-1, \max(x, 0)\big)\\
-	\mathtt{WRAP}(x, L)&=& x - \Big\lfloor \frac{x}{L}\Big\rfloor\cdot L\\
-	\mathtt{MIRROR}(x, L)&=&   \begin{cases}
-		x - \Big\lfloor \frac{x}{L}\Big\rfloor\cdot L & \qquad\left\lfloor \frac{x}{L}\right\rfloor\equiv 0\,(\mathrm{mod~}2)\\ 
-		\left(\Big\lfloor\frac{x}{L}\Big\rfloor+1\right)\cdot L - x -1& \qquad \mathrm{otherwise}\\
-	\end{cases}\\
-	\mathtt{NONE}(x, L)&=& x%\\
-	\end{array}
-$$
+<p align="center"> <img src="images/fml_11.png"> </p>
 
-If $TILE_i$ denotes whichever of these three functions applies in direction *i*, then:
 
-$$ C(i, j) =  \begin{cases}
-    \mathtt{IMAGE}\big[\mathtt{TILE}_i(i, H)\big]\big[\mathtt{TILE}_j(j, W)\big] & \text{$(\mathtt{TILE}_i \neq \mathtt{NONE}$ or $0 \leq i < L$) and} \\
-     & \text{$(\mathtt{TILE}_j \neq \mathtt{NONE}$ or $0 \leq j < L$)} \\
-    0 & \mathrm{otherwise}\\
-\end{cases}
-$$
+If _TILE<sub>i</sub>_ denotes whichever of these three functions applies in direction *i*, then:
 
-where the result of applying $TILE_i$ is always an integer in $\\{0..L-1\\}$, and they all reduce to the identity if their first argument is already in that range.
+<p align="center"> <img src="images/fml_12.png"> </p>
 
-##### Figure 2-8: The different tiling texture modes control how the displacement texture image is extended outside the square between $(0, 0)$ and $(1, 1)$.
+
+where the result of applying _TILE<sub>i</sub>_ is always an integer in _{0..L-1}_, and they all reduce to the identity if their first argument is already in that range.
+
+##### Figure 2-8: The different tiling texture modes control how the displacement texture image is extended outside the square between _(0, 0)_ and _(1, 1)_.
 
 ![tiling modes](images/2.8_tiling_modes.png)
 
-##### Figure 2-9: Results of applying the texture of Fig. 8a using different tiling texture modes to a quad base mesh with texture coordinates between $(-1, -1)$ and $(2, 2)$.
+##### Figure 2-9: Results of applying the texture of Fig. 8a using different tiling texture modes to a quad base mesh with texture coordinates between _(-1, -1)_ and _(2, 2)_.
 
 | ![tiling wrap](images/2.9_tiling_wrap.png) | ![tiling mirror](images/2.9_tiling_mirror.png) | ![tiling clamp](images/2.9_tiling_clamp.png) | ![tiling none](images/2.9_tiling_none.png) |
 | :---: | :---: | :---: | :---: |
