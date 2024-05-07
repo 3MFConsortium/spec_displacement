@@ -71,7 +71,7 @@ $$
 	\mathtt{CLAMP}(x, L)&=&\min\big(L-1, \max(x, 0)\big)\\
 	\mathtt{WRAP}(x, L)&=& x - \Big\lfloor \frac{x}{L}\Big\rfloor\cdot L\\
 	\mathtt{MIRROR}(x, L)&=&   \begin{cases}
-		x - \Big\lfloor \frac{x}{L}\Big\rfloor\cdot L & \qquad\left\lfloor \frac{x}{L}\right\rfloor\equiv 0\,(\mathrm{mod~}2)\\ 
+		x - \Big\lfloor \frac{x}{L}\Big\rfloor\cdot L & \qquad\left\lfloor \frac{x}{L}\right\rfloor\equiv 0\ (\mathrm{mod~}2)\\ 
 		\left(\Big\lfloor\frac{x}{L}\Big\rfloor+1\right)\cdot L - x -1& \qquad \mathrm{otherwise}\\
 	\end{cases}\\
 	\mathtt{NONE}(x, L)&=& x%\\

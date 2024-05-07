@@ -131,7 +131,7 @@ Denote as _n(u, v)_ the displacement vectors associated to each point of triangl
 
 <p align="center"> <img src="images/fml_02.png"> </p>
 
-Figure 3 shows a triangle in the mesh is uv-mapped to a displacement texture:
+Figure 2-3 shows a triangle in the mesh is uv-mapped to a displacement texture:
 
 ##### Figure 2-3: The triangle from Fig. 2-2 after applying the corresponding part of the displacement map. Both the scale factor and the values in the displacement map affect the length of the displacement.
 
