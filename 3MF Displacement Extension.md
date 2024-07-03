@@ -13,7 +13,7 @@
 
 
 
-| **Version** | 0.8.2 |
+| **Version** | 0.8.3 |
 | --- | --- |
 | **Status** | Pre-approved |
 
@@ -496,7 +496,15 @@ The displaced surface may have self-intersections. But if this is the case, the 
 
 | ![image 1](images/5.3.1_adjacent_neg_jump.png) | ![image 2](images/5.3.2_triangle_neg_jump.png) | ![image 3](images/5.3.3_triangle_neg_jump.png) | ![image 4](images/5.3.4_triangle_neg_jump.png) |
 | :---: | :---: | :---: | :---: |
-| Displacement 2D view | Quad surface with different displacement vectors | Displaced surfaces showing discontinuity | Connected displaced surfaces through the original edge |
+| Displacement 2D view | Displacement texture image | Original object to displace texture | Connected displaced surfaces through the original edge |
+
+A negatively displaced surface when joining to a perpendicular surface might produce non-printable zero width walls. These zero witdh walls SHOULD NOT be printed (see Figure 5-4).
+
+##### Figure 5-4: In this example, all the displacement vectors point outwards, but height = 20 and offset = -20. As a result, the displaced surface end -20 from the original edge and connects to the lateral surface at the original vertex, producing zero width walls. These zero width walls SHOULD NOT be printed.
+
+| ![image 1](images/5.4.1_zero_width_walls.png) | ![image 2](images/5.4.2_zero_width_walls.png) | ![image 3](images/5.4.3_zero_width_walls.png) | ![image 4](images/5.4.4_zero_width_walls.png) | ![image 5](images/5.4.5_zero_width_walls.png) |
+| :---: | :---: | :---: | :---: | :---: |
+| Displacement 2D view | Displacement texture image, selecting green channel | Original object to displace texture | Displaced surface showing non-printable zero width walls | Final displaced surface |
 
 ## 5.3 Displacement Map and Properties
 
