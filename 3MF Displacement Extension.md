@@ -502,9 +502,9 @@ A negatively displaced surface when joining to a perpendicular surface might pro
 
 ##### Figure 5-4: In this example, all the displacement vectors point outwards, but height = 20 and offset = -20. As a result, the displaced surface end -20 from the original edge and connects to the lateral surface at the original vertex, producing zero width walls. These zero width walls SHOULD NOT be printed.
 
-| ![image 1](images/5.4.1_zero_width_walls.png) | ![image 2](images/5.4.2_zero_width_walls.png) | ![image 3](images/5.4.3_zero_width_walls.png) | ![image 4](images/5.4.4_zero_width_walls.png) | ![image 5](images/5.4.5_zero_width_walls.png) |
-| :---: | :---: | :---: | :---: | :---: |
-| Displacement 2D view | Displacement texture image, selecting green channel | Original object to displace texture | Displaced surface showing non-printable zero width walls | Final displaced surface |
+| ![image 1](images/5.4.1_zero_width_walls.png) | ![image 2](images/5.4.2_zero_width_walls.png) | ![image 3](images/5.4.3_zero_width_walls.png) | ![image 4](images/5.4.4_zero_width_walls.png) 
+| :---: | :---: | :---: | :---: |
+| Displacement 2D view | Displacement texture image | Displaced surface showing zero width walls | Final displaced surface |
 
 ## 5.3 Displacement Map and Properties
 
