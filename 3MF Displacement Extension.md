@@ -504,7 +504,7 @@ A negatively displaced surface when joining to a perpendicular surface might pro
 
 | ![image 1](images/5.4.1_zero_width_walls.png) | ![image 2](images/5.4.2_zero_width_walls.png) | ![image 3](images/5.4.3_zero_width_walls.png) | ![image 4](images/5.4.4_zero_width_walls.png) 
 | :---: | :---: | :---: | :---: |
-| Displacement 2D view | Original object | Displaced surface showing zero width walls | Final displaced surface |
+| Displacement 2D view | Original object | Negative displaced surface showing zero width walls | Final displaced surface |
 
 ## 5.3 Displacement Map and Properties
 
