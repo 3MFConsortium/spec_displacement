@@ -13,9 +13,9 @@
 
 
 
-| **Version** | 0.8.2 |
+| **Version** | 1.0.0 |
 | --- | --- |
-| **Status** | Pre-approved |
+| **Status** | Published |
 
 ## Disclaimer
 
@@ -93,7 +93,7 @@ The rationale of the displacement specification extension is to enhance mesh geo
 This means that the displacement information of a triangle is given by:
 - UV coordinates for each corner.
 - A scalar 2D image for representing the "heightmap".
-- A displacement vector for each corner which is interpolated on the surface.
+- A displacement vector for each corner which are interpolated on the surface.
 
 This document describes a new element \<displacementmesh> in the \<object> elements choice that specifies a new object type, other than a mesh shape or components. This element is OPTIONAL for producers but MUST be supported by consumers that specify support for the 3MF Displacement Extension.
 
@@ -292,11 +292,11 @@ Element **\<normvector>**
 | z | **ST\_Number** | required |   | Z-component of the normalized displacement vector. |
 | @anyAttribute | | | | |
 
-The \<normvector> element defines the direction where the displacement is applied. The \<normvector> element MUST be normalized by the producer so the module of the displacement vector is 1.0. Consumers SHOULD accept non-normalized vectors but normalize them before applying.
+The \<normvector> element defines the direction where the displacement is applied. The \<normvector> element MUST be normalized by the producer so the modulus of the displacement vector is 1.0. Consumers SHOULD accept non-normalized vectors but normalize them before applying.
 
 **x, y, z** - The X, Y and Z components of the normalized vector group.
 
-The normalized vectors MUST point to the triangle's outer hemisphere of the triangle. The scalar product of a normalized displacement vector to the triangle normal MUST be greater than 0.
+The normalized vectors MUST point to the outer hemisphere of the triangle. The scalar product of a normalized displacement vector to the triangle normal MUST be greater than 0.
 
 Normalized displacement vectors MUST be linearly interpolated to spread the displacement map along a surface. All interpolated vectors MUST be normalized before being applied.
 
@@ -496,7 +496,15 @@ The displaced surface may have self-intersections. But if this is the case, the 
 
 | ![image 1](images/5.3.1_adjacent_neg_jump.png) | ![image 2](images/5.3.2_triangle_neg_jump.png) | ![image 3](images/5.3.3_triangle_neg_jump.png) | ![image 4](images/5.3.4_triangle_neg_jump.png) |
 | :---: | :---: | :---: | :---: |
-| Displacement 2D view | Quad surface with different displacement vectors | Displaced surfaces showing discontinuity | Connected displaced surfaces through the original edge |
+| Displacement 2D view | Displacement texture image | Original object | Connected displaced surfaces through the original edge |
+
+A negatively displaced surface when joining to a perpendicular surface might produce non-printable zero width walls. These zero witdh walls SHOULD NOT be printed (see Figure 5-4).
+
+##### Figure 5-4: In this example, all the displacement vectors point outwards, with height = 20 and offset = -20. As a result, the displaced surface ends -20 from the original edge and connects to the lateral surface at the original vertex. This produces zero width walls which SHOULD NOT be printed.
+
+| ![image 1](images/5.4.1_zero_width_walls.png) | ![image 2](images/5.4.2_zero_width_walls.png) | ![image 3](images/5.4.3_zero_width_walls.png) | ![image 4](images/5.4.4_zero_width_walls.png) 
+| :---: | :---: | :---: | :---: |
+| Displacement 2D view | Original object | Negative displaced surface showing zero width walls | Final displaced surface |
 
 ## 5.3 Displacement Map and Properties
 
